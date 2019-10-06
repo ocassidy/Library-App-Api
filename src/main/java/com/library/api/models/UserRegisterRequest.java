@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
+public class UserRegisterRequest {
     @NotBlank
     @Size(min = 4, max = 100)
     private String name;

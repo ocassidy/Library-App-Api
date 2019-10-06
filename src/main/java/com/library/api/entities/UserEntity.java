@@ -16,6 +16,13 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name = "users")
 public class UserEntity {
+    public UserEntity(String name, String username, String email, String password) {
+        this.name = name;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -40,13 +47,6 @@ public class UserEntity {
     @NonNull
     @NotNull
     private String password;
-
-    public UserEntity(String name, String username, String email, String password) {
-        this.name = name;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-    }
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",

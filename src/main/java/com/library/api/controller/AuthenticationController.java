@@ -2,8 +2,8 @@ package com.library.api.controller;
 
 import com.library.api.models.ApiResponse;
 import com.library.api.models.JwtAuthenticationResponse;
-import com.library.api.models.LoginRequest;
-import com.library.api.models.RegisterRequest;
+import com.library.api.models.UserLoginRequest;
+import com.library.api.models.UserRegisterRequest;
 import com.library.api.services.AuthenticationServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,17 +27,17 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtAuthenticationResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        return new ResponseEntity<>(authenticationService.authenticateUser(loginRequest), OK);
+    public ResponseEntity<JwtAuthenticationResponse> authenticateUser(@Valid @RequestBody UserLoginRequest userLoginRequest) {
+        return new ResponseEntity<>(authenticationService.authenticateUser(userLoginRequest), OK);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
-         ApiResponse apiResponse = authenticationService.registerUser(registerRequest);
+    public ResponseEntity<ApiResponse> registerUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
+         ApiResponse apiResponse = authenticationService.registerUser(userRegisterRequest);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/users/{username}")
-                .buildAndExpand(registerRequest.getUsername()).toUri();
+                .buildAndExpand(userRegisterRequest.getUsername()).toUri();
 
         return ResponseEntity.created(location).body(apiResponse);
     }

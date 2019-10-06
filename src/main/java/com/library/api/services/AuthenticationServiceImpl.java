@@ -6,8 +6,8 @@ import com.library.api.enums.RoleEnum;
 import com.library.api.exceptions.AppException;
 import com.library.api.models.ApiResponse;
 import com.library.api.models.JwtAuthenticationResponse;
-import com.library.api.models.LoginRequest;
-import com.library.api.models.RegisterRequest;
+import com.library.api.models.UserLoginRequest;
+import com.library.api.models.UserRegisterRequest;
 import com.library.api.repositories.RoleRepository;
 import com.library.api.repositories.UserRepository;
 import com.library.api.security.JwtTokenProvider;
@@ -43,11 +43,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public JwtAuthenticationResponse authenticateUser(LoginRequest loginRequest) {
+    public JwtAuthenticationResponse authenticateUser(UserLoginRequest userLoginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsernameOrEmail(),
-                        loginRequest.getPassword()
+                        userLoginRequest.getUsernameOrEmail(),
+                        userLoginRequest.getPassword()
                 )
         );
 
@@ -58,17 +58,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return new JwtAuthenticationResponse(jwt);
     }
 
-    public ApiResponse registerUser(RegisterRequest registerRequest) {
-        if (userRepository.existsByUsername(registerRequest.getUsername())) {
+    public ApiResponse registerUser(UserRegisterRequest userRegisterRequest) {
+        if (userRepository.existsByUsername(userRegisterRequest.getUsername())) {
             return new ApiResponse(false, USERNAME_TAKEN);
         }
 
-        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+        if (userRepository.existsByEmail(userRegisterRequest.getEmail())) {
             return new ApiResponse(false, EMAIL_TAKEN);
         }
 
-        UserEntity user = new UserEntity(registerRequest.getName(), registerRequest.getUsername(),
-                registerRequest.getEmail(), registerRequest.getPassword());
+        UserEntity user = new UserEntity(userRegisterRequest.getName(), userRegisterRequest.getUsername(),
+                userRegisterRequest.getEmail(), userRegisterRequest.getPassword());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
