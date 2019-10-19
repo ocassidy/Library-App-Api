@@ -6,7 +6,6 @@ import com.library.api.models.UserAvailabilityModel;
 import com.library.api.models.UserDetails;
 import com.library.api.services.UserServiceImpl;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,10 +42,5 @@ public class UserController {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
         return new UserDetails(user.getId(), user.getUsername(), user.getName());
-    }
-
-    @GetMapping("/user")
-    public String getCurrentUser(Authentication authentication){
-        return authentication.getName();
     }
 }

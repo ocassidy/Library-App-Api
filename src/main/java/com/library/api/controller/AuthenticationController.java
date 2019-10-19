@@ -6,10 +6,8 @@ import com.library.api.models.UserLoginRequest;
 import com.library.api.models.UserRegisterRequest;
 import com.library.api.services.AuthenticationServiceImpl;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -40,5 +38,10 @@ public class AuthenticationController {
                 .buildAndExpand(userRegisterRequest.getUsername()).toUri();
 
         return ResponseEntity.created(location).body(apiResponse);
+    }
+
+    @GetMapping("/user")
+    public String getCurrentUser(Authentication authentication){
+        return authenticationService.getCurrentUser(authentication);
     }
 }

@@ -51,6 +51,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 )
         );
 
+        if (!authentication.isAuthenticated()) {
+            return new JwtAuthenticationResponse("User Credentials Invalid", true);
+        }
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = tokenProvider.generateToken(authentication);
@@ -80,5 +84,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
 
         return new ApiResponse(true, "User registered successfully");
+    }
+
+    public String getCurrentUser (Authentication authentication) {
+        if (authentication.getName() == null) {
+            return null;
+        }
+         return authentication.getName();
     }
 }

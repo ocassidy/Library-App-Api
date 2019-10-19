@@ -17,7 +17,16 @@ public class JwtAuthenticationResponse {
 
     private String tokenType = "Bearer";
 
+    private String message;
+
+    private boolean invalidUserCredentialsProvidedBool = false;
+
     public JwtAuthenticationResponse(String token) {
         this.token = token;
+    }
+
+    public JwtAuthenticationResponse(String message, boolean invalidUserCredentialsProvidedBool) {
+        this.message = message;
+        this.invalidUserCredentialsProvidedBool = invalidUserCredentialsProvidedBool;
     }
 }
