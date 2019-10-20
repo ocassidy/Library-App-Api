@@ -1,46 +1,46 @@
-# Java Gradle CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-java/ for more details
-#
 version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
       - image: circleci/openjdk:latest
       - image: circleci/postgres:latest
 
-        working_directory: ~/repo
+    environment:
+      LIBRARY_DB_USERNAME: Library_App_Api_User
+      LIBRARY_DB_PASSWORD: finalYearAppProject
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
 
-        environment:
-          POSTGRES_USER: Library_App_Api_User
-          POSTGRES_PASSWORD: finalYearAppProject
-          JVM_OPTS: -Xmx3200m
-          TERM: dumb
-
-          steps:
-            - checkout
-
-            # Download and cache dependencies
-            - restore_cache:
-                keys:
-                  - v1-dependencies-{{ checksum "build.gradle" }}
-                  # fallback to using the latest cache if no exact match is found
-                  - v1-dependencies-
-
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle" }}
+            - v1-dependencies-
             - run: gradle dependencies
-
-            - save_cache:
-                paths:
-                  - ~/.gradle
-                key: v1-dependencies-{{ checksum "build.gradle" }}
-
-            # run tests
-            - run: gradle clean build
-
-orbs:
-  heroku: circleci/heroku@1.0.0
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+      - run: gradle clean build
+  deploy:
+    docker:
+      - image: buildpack-deps:trusty
+    steps:
+      - checkout
+      - run:
+          name: Deploy heroku-integration to Heroku
+          #TODO: Change to master once build confirmed working
+          command: |
+            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git heroku-integration
 workflows:
-  heroku_deploy:
+  version: 2
+  build-deploy:
     jobs:
-      - heroku/deploy-via-git
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: heroku-integration
