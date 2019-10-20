@@ -1,14 +1,12 @@
 version: 2
 jobs:
   build:
+    environment:
+      _JAVA_OPTIONS: '-Xmx3g'
+      GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2'
     docker:
       - {image: 'circleci/openjdk:latest'}
-      - {image: 'circleci/postgres:latest'}
-    environment:
-      LIBRARY_DB_USERNAME: Library_App_Api_User
-      LIBRARY_DB_PASSWORD: finalYearAppProject
-      JVM_OPTS: '-Xmx3200m'
-      TERM: dumb
+      - {image: 'circleci/postgres:latest', environment: {LIBRARY_DB_USERNAME: Library_App_Api_User, LIBRARY_DB_PASSWORD: finalYearAppProject}}
     steps:
       - checkout
       - {restore_cache: {keys: ['v1-dependencies-{{ checksum "build.gradle" }}', v1-dependencies-, {run: 'gradle dependencies'}]}}
