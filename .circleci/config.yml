@@ -11,8 +11,20 @@ jobs:
           LIBRARY_DB_USERNAME: Library_App_Api_User
           LIBRARY_DB_PASSWORD: finalYearAppProject
 
+    working_directory: ~/repo
+
     steps:
       - checkout
+      - run: apt-get update -qq && apt-get install -y postgresql
+      - run:
+          command: |
+            psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE librarydb_test;"
+            psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE librarydb_dev;"
+            psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE librarydb_staging;"
+            psql -h 127.0.0.1 -U postgres -c "CREATE USER Library_App_Api_User WITH PASSWORD 'finalYearAppProject';
+            psql -h 127.0.0.1 -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE librarydb_test TO Library_App_Api_User;"
+            psql -h 127.0.0.1 -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE librarydb_dev TO Library_App_Api_User;"
+            psql -h 127.0.0.1 -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE librarydb_staging TO Library_App_Api_User;"
       - restore_cache:
           key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
       - restore_cache:
