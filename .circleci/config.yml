@@ -2,45 +2,27 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:latest
-      - image: circleci/postgres:latest
-
+      - {image: 'circleci/openjdk:latest'}
+      - {image: 'circleci/postgres:latest'}
     environment:
       LIBRARY_DB_USERNAME: Library_App_Api_User
       LIBRARY_DB_PASSWORD: finalYearAppProject
-      JVM_OPTS: -Xmx3200m
+      JVM_OPTS: '-Xmx3200m'
       TERM: dumb
-
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.gradle" }}
-            - v1-dependencies-
-            - run: gradle dependencies
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
-      - run: gradle clean build
+      - {restore_cache: {keys: ['v1-dependencies-{{ checksum "build.gradle" }}', v1-dependencies-, {run: 'gradle dependencies'}]}}
+      - {save_cache: {paths: [~/.gradle], key: 'v1-dependencies-{{ checksum "build.gradle" }}'}}
+      - {run: 'gradle clean build'}
   deploy:
     docker:
-      - image: buildpack-deps:trusty
+      - {image: 'buildpack-deps:trusty'}
     steps:
       - checkout
-      - run:
-          name: Deploy heroku-integration to Heroku
-          #TODO: Change to master once build confirmed working
-          command: |
-            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git heroku-integration
+      - {run: {name: 'Deploy heroku-integration to Heroku', command: "git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git heroku-integration\n"}}
 workflows:
   version: 2
   build-deploy:
     jobs:
       - build
-      - deploy:
-          requires:
-            - build
-          filters:
-            branches:
-              only: heroku-integration
+      - {deploy: {requires: [build], filters: {branches: {only: heroku-integration}}}}
