@@ -10,7 +10,6 @@ jobs:
         environment:
           POSTGRES_USERNAME: postgres
           POSTGRES_PASSWORD: finalYearAppProject
-          POSTGRES_DB: librarydb_test
 
     working_directory: ~/repo
 
