@@ -4,7 +4,6 @@ jobs:
     environment:
       _JAVA_OPTIONS: '-Xmx3g'
       GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2'
-    resource_class: large
     docker:
       - image: circleci/openjdk:11.0.2-jdk
       - image: circleci/postgres:9.6.9
