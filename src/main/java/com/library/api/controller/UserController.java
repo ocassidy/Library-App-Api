@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+//@CrossOrigin(origins = {"http://localhost:3000", "https://staging-library-app.herokuapp.com"})
 public class UserController {
     private UserServiceImpl userService;
 

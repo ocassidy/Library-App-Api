@@ -16,7 +16,8 @@ import java.net.URI;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping(path = "/api/auth", produces = "application/json")
+//@CrossOrigin(origins = {"http://localhost:3000", "https://staging-library-app.herokuapp.com"})
 public class AuthenticationController {
     private AuthenticationServiceImpl authenticationService;
 
@@ -24,14 +25,14 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping("/login")
+    @PostMapping(path = "/login", produces = "application/json")
     public ResponseEntity<JwtAuthenticationResponse> authenticateUser(@Valid @RequestBody UserLoginRequest userLoginRequest) {
         return new ResponseEntity<>(authenticationService.authenticateUser(userLoginRequest), OK);
     }
 
-    @PostMapping("/register")
+    @PostMapping(path = "/register", produces = "application/json")
     public ResponseEntity<ApiResponse> registerUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
-         ApiResponse apiResponse = authenticationService.registerUser(userRegisterRequest);
+        ApiResponse apiResponse = authenticationService.registerUser(userRegisterRequest);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/users/{username}")
@@ -41,7 +42,7 @@ public class AuthenticationController {
     }
 
     @GetMapping("/user")
-    public String getCurrentUser(Authentication authentication){
+    public String getCurrentUser(Authentication authentication) {
         return authenticationService.getCurrentUser(authentication);
     }
 }
