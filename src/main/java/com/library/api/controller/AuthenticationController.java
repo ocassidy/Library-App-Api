@@ -16,8 +16,7 @@ import java.net.URI;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
-@RequestMapping(path = "/api/auth", produces = "application/json")
-//@CrossOrigin(origins = {"http://localhost:3000", "https://staging-library-app.herokuapp.com"})
+@RequestMapping(path = "/api/auth")
 public class AuthenticationController {
     private AuthenticationServiceImpl authenticationService;
 

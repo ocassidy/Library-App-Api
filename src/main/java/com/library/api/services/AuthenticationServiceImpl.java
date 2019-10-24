@@ -77,7 +77,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         RoleEntity userRole = roleRepository.findByRole(RoleEnum.ROLE_USER)
-                .orElseThrow(() -> new AppException("User Role not set."));
+                .orElseThrow(() -> new AppException("User Role not set in Database."));
 
         user.setRoles(Collections.singleton(userRole));
 
