@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.Collections;
 
 @Service
@@ -86,10 +87,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return new ApiResponse(true, "User registered successfully");
     }
 
-    public String getCurrentUser (Authentication authentication) {
-        if (authentication.getName() == null) {
-            return null;
-        }
-         return authentication.getName();
+    public Object getCurrentUser (Authentication authentication) {
+         return authentication.getPrincipal();
     }
 }

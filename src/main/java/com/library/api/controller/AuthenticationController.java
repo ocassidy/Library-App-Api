@@ -41,7 +41,7 @@ public class AuthenticationController {
     }
 
     @GetMapping("/user")
-    public String getCurrentUser(Authentication authentication) {
+    public Object getCurrentUser(Authentication authentication) {
         return authenticationService.getCurrentUser(authentication);
     }
 }

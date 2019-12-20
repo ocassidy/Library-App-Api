@@ -9,5 +9,5 @@ import org.springframework.security.core.Authentication;
 public interface AuthenticationService {
    JwtAuthenticationResponse authenticateUser(UserLoginRequest userLoginRequest);
    ApiResponse registerUser(UserRegisterRequest userRegisterRequest);
-   String getCurrentUser(Authentication authentication);
+   Object getCurrentUser(Authentication authentication);
 }
