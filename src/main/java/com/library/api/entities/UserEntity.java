@@ -1,9 +1,6 @@
 package com.library.api.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Builder
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,27 +26,23 @@ public class UserEntity {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "name")
-    @NonNull
     @NotNull
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "username")
-    @NonNull
     @NotNull
+    @Column(name = "username")
     private String username;
 
-    @Column(name = "user_email")
-    @NonNull
     @NotNull
+    @Column(name = "user_email")
     private String email;
 
-    @Column(name = "user_password")
-    @NonNull
     @NotNull
+    @Column(name = "user_password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))

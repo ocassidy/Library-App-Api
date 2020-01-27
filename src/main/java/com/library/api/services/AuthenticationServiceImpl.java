@@ -2,7 +2,6 @@ package com.library.api.services;
 
 import com.library.api.entities.RoleEntity;
 import com.library.api.entities.UserEntity;
-import com.library.api.enums.RoleEnum;
 import com.library.api.exceptions.AppException;
 import com.library.api.models.ApiResponse;
 import com.library.api.models.JwtAuthenticationResponse;
@@ -18,8 +17,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.util.Collections;
+
+import static com.library.api.enums.RoleEnum.ROLE_ADMIN;
+import static com.library.api.enums.RoleEnum.ROLE_USER;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -77,7 +78,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        RoleEntity userRole = roleRepository.findByRole(RoleEnum.ROLE_USER)
+        RoleEntity userRole = roleRepository.findByRole(ROLE_USER)
                 .orElseThrow(() -> new AppException("User Role not set in Database."));
 
         user.setRoles(Collections.singleton(userRole));
@@ -87,7 +88,39 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return new ApiResponse(true, "User registered successfully");
     }
 
-    public Object getCurrentUser (Authentication authentication) {
-         return authentication.getPrincipal();
+    public ApiResponse registerAdminUser(UserRegisterRequest userRegisterRequest) {
+        if (userRepository.existsByUsername(userRegisterRequest.getUsername())) {
+            return new ApiResponse(false, USERNAME_TAKEN);
+        }
+
+        if (userRepository.existsByEmail(userRegisterRequest.getEmail())) {
+            return new ApiResponse(false, EMAIL_TAKEN);
+        }
+
+        UserEntity user = new UserEntity(userRegisterRequest.getName(), userRegisterRequest.getUsername(),
+                userRegisterRequest.getEmail(), userRegisterRequest.getPassword());
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        RoleEntity userRole = roleRepository.findByRole(ROLE_ADMIN)
+                .orElseThrow(() -> new AppException("User Role not set in Database."));
+
+        user.setRoles(Collections.singleton(userRole));
+
+        userRepository.save(user);
+
+        return new ApiResponse(true, "User registered successfully");
+    }
+
+    public Object getCurrentUser(Authentication authentication) {
+        return authentication.getPrincipal();
+    }
+
+    public Boolean usernameAvailabilityCheck(String username) {
+        return !userRepository.existsByUsername(username);
+    }
+
+    public Boolean emailAvailabilityCheck(String email) {
+        return !userRepository.existsByEmail(email);
     }
 }

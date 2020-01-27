@@ -8,12 +8,11 @@ import com.library.api.services.AuthenticationServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.net.URI;
 
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping(path = "/api/auth")
@@ -33,15 +32,34 @@ public class AuthenticationController {
     public ResponseEntity<ApiResponse> registerUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
         ApiResponse apiResponse = authenticationService.registerUser(userRegisterRequest);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/users/{username}")
-                .buildAndExpand(userRegisterRequest.getUsername()).toUri();
+        if (!apiResponse.getSuccess()) {
+            return new ResponseEntity<>(apiResponse, BAD_REQUEST);
+        }
 
-        return ResponseEntity.created(location).body(apiResponse);
+        return new ResponseEntity<>(apiResponse, CREATED);
+    }
+
+    @GetMapping("/users/username/availability")
+    public Boolean usernameAvailabilityCheck(@RequestParam String username) {
+        return authenticationService.usernameAvailabilityCheck(username);
+    }
+
+    @GetMapping("/users/email/availability")
+    public Boolean emailAvailabilityCheck(@RequestParam String email) {
+        return authenticationService.emailAvailabilityCheck(email);
+    }
+
+    @ApiIgnore
+    @PostMapping(path = "/register/admin", produces = "application/json")
+    public ResponseEntity<ApiResponse> registerAdminUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
+        ApiResponse apiResponse = authenticationService.registerAdminUser(userRegisterRequest);
+
+        return new ResponseEntity<>(apiResponse, CREATED);
     }
 
     @GetMapping("/user")
-    public Object getCurrentUser(Authentication authentication) {
-        return authenticationService.getCurrentUser(authentication);
+    public ResponseEntity<Object> getCurrentUser(Authentication authentication) {
+        Object currentUser = authenticationService.getCurrentUser(authentication);
+        return new ResponseEntity<>(currentUser, OK);
     }
 }

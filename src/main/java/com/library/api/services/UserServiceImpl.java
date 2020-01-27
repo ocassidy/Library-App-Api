@@ -1,14 +1,15 @@
 package com.library.api.services;
 
 import com.library.api.entities.UserEntity;
-import com.library.api.models.UserDetails;
+import com.library.api.models.ApiResponse;
+import com.library.api.models.UserDetailsModel;
 import com.library.api.repositories.UserRepository;
 import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -20,28 +21,35 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
-    public List<String> getAllLoggedInUsers() {
+    public List<String> getAllUsers() {
         List<Object> principals = sessionRegistry.getAllPrincipals();
 
         List<String> usersNamesList = new ArrayList<>();
 
-        for (Object principal: principals) {
-            if (principal instanceof UserDetails) {
-                usersNamesList.add(((UserDetails) principal).getUsername());
+        for (Object principal : principals) {
+            if (principal instanceof UserDetailsModel) {
+                usersNamesList.add(((UserDetailsModel) principal).getUsername());
             }
         }
         return usersNamesList;
     }
 
-    public Optional<UserEntity> getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public UserEntity getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found with username or email : " + username)
+                );
     }
 
-    public Boolean usernameAvailabilityCheck(String username) {
-        return !userRepository.existsByUsername(username);
+    public UserEntity getUserByEmail(String email) {
+        return userRepository.findByUsername(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found with email or email : " + email)
+                );
     }
 
-    public Boolean emailAvailabilityCheck(String email) {
-        return !userRepository.existsByEmail(email);
+    public ApiResponse updateUser(UserEntity userEntity) {
+        userRepository.save(userEntity);
+        return new ApiResponse(true, "User updated successfully");
     }
 }

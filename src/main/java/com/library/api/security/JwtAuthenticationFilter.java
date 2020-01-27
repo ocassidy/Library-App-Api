@@ -1,5 +1,6 @@
 package com.library.api.security;
 
+import com.library.api.services.CustomUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

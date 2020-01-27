@@ -1,7 +1,8 @@
-package com.library.api.security;
+package com.library.api.services;
 
 import com.library.api.entities.UserEntity;
 import com.library.api.repositories.UserRepository;
+import com.library.api.security.UserPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
