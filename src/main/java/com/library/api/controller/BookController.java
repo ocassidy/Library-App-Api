@@ -2,6 +2,8 @@ package com.library.api.controller;
 
 import com.library.api.entities.AuthorEntity;
 import com.library.api.entities.BookEntity;
+import com.library.api.models.ApiResponse;
+import com.library.api.models.Book.BookLoanRequest;
 import com.library.api.services.BookServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/api")
@@ -66,5 +67,18 @@ public class BookController {
     public ResponseEntity<AuthorEntity> addBookAuthor(@RequestBody @Valid AuthorEntity authorEntity) {
         authorEntity = bookService.addBookAuthor(authorEntity);
         return new ResponseEntity<>(authorEntity, CREATED);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    @PostMapping("/book/{id}/withdraw")
+    public ResponseEntity<ApiResponse> withdrawBook(@PathVariable Long id,
+                                                    @RequestBody @Valid BookLoanRequest bookLoanRequest) {
+        ApiResponse apiResponse = bookService.withdrawBook(id, bookLoanRequest);
+
+        if (!apiResponse.getSuccess()) {
+            return new ResponseEntity<>(apiResponse, UNPROCESSABLE_ENTITY);
+        }
+
+        return new ResponseEntity<>(apiResponse, OK);
     }
 }

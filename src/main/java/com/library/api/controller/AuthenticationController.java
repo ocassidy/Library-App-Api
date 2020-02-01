@@ -6,6 +6,7 @@ import com.library.api.models.UserLoginRequest;
 import com.library.api.models.UserRegisterRequest;
 import com.library.api.services.AuthenticationServiceImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -50,6 +51,7 @@ public class AuthenticationController {
     }
 
     @ApiIgnore
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(path = "/register/admin", produces = "application/json")
     public ResponseEntity<ApiResponse> registerAdminUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
         ApiResponse apiResponse = authenticationService.registerAdminUser(userRegisterRequest);

@@ -1,10 +1,13 @@
 package com.library.api.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.library.api.entities.AuthorEntity;
 import com.library.api.entities.BookEntity;
-import com.library.api.models.UserLoginRequest;
+import com.library.api.helpers.TestHelpers;
+import com.library.api.models.ApiResponse;
+import com.library.api.models.Book.BookLoanRequest;
 import com.library.api.models.UserRegisterRequest;
 import com.library.api.repositories.AuthorRepository;
 import com.library.api.repositories.BookRepository;
@@ -24,14 +27,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpMethod.*;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -39,8 +43,6 @@ import static org.springframework.http.HttpStatus.OK;
 public class BookControllerIT {
     @Autowired
     private TestRestTemplate restTemplate;
-
-    private String bearerToken;
 
     @Autowired
     private AuthorRepository authorRepository;
@@ -51,15 +53,16 @@ public class BookControllerIT {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    TestHelpers testHelpers;
+
     @BeforeEach
-    public void setupAuthenticatedUser() throws IOException {
-        assertEquals(CREATED, registerAdminUser().getStatusCode());
+    public void setup() throws IOException {
+        ApiResponse apiResponse = testHelpers.registerAdminUser();
+        assertEquals(true, apiResponse.getSuccess());
+        assertEquals("Admin User registered successfully", apiResponse.getMessage());
 
-        ResponseEntity<String> loginResponse = loginUserRetrieveToken();
-        assertEquals(OK, loginResponse.getStatusCode());
-
-        JsonNode node = new ObjectMapper().readValue(loginResponse.getBody(), JsonNode.class);
-        bearerToken = node.get("token").asText();
+        testHelpers.loginUserRetrieveToken("testAdmin", "testpass");
     }
 
     @AfterEach
@@ -70,134 +73,97 @@ public class BookControllerIT {
     }
 
     @Test
-    public void createAuthorAndBookSuccess() {
-        HttpHeaders headers = setAuthHeader();
+    public void createBookWithAuthorSuccess() throws IOException {
+        HttpHeaders headers = testHelpers.setAuthHeader();
         AuthorEntity authorEntity = AuthorEntity.builder().name("George Orwell").build();
 
-        HttpEntity<AuthorEntity> authorRequest = new HttpEntity<>(authorEntity, headers);
-        ResponseEntity<String> authorResponse = restTemplate.postForEntity("/api/book/author", authorRequest, String.class);
-        assertEquals(CREATED, authorResponse.getStatusCode());
+        BookEntity bookEntity = testHelpers.generateBook(1,
+                1, "1st", "IT", "Viking", "Horror",
+                "1986", "0670813028", "9780670813025");
 
+        List<BookEntity> bookList = asList(bookEntity);
+        authorEntity.setBooks(bookList);
         Set<AuthorEntity> authorsSet = Stream.of(authorEntity).collect(Collectors.toSet());
-        BookEntity bookEntity = BookEntity.builder()
-                .authors(authorsSet)
-                .copies(1)
-                .edition("1st")
-                .name("Nineteen Eighty-Four")
-                .publisher("Secker & Warburg")
-                .genre("Dystopian")
-                .yearPublished("1949")
-                .isbn10("9780141393049")
-                .isbn13("978-0141393049")
-                .build();
+        bookEntity.setAuthors(authorsSet);
 
         HttpEntity<BookEntity> request = new HttpEntity<>(bookEntity, headers);
         ResponseEntity<String> response = restTemplate.postForEntity("/api/book", request, String.class);
-
         assertEquals(CREATED, response.getStatusCode());
+
+        JsonNode node = new ObjectMapper().readValue(response.getBody(), JsonNode.class);
+        String bookName = node.get("name").asText();
+
+        assertEquals("IT", bookName);
     }
 
     @Test
     public void getBookSuccess() throws IOException {
-        HttpHeaders headers = setAuthHeader();
+        HttpHeaders headers = testHelpers.setAuthHeader();
         AuthorEntity authorEntity = AuthorEntity.builder().name("George Orwell").build();
 
-        HttpEntity<AuthorEntity> authorRequest = new HttpEntity<>(authorEntity, headers);
-        ResponseEntity<String> authorResponse = restTemplate.postForEntity("/api/book/author", authorRequest, String.class);
-        assertEquals(CREATED, authorResponse.getStatusCode());
+        BookEntity bookEntity = testHelpers.generateBook(1,
+                1, "1st", "IT", "Viking", "Horror",
+                "1986", "0670813028", "9780670813025");
 
+        List<BookEntity> bookList = asList(bookEntity);
+        authorEntity.setBooks(bookList);
         Set<AuthorEntity> authorsSet = Stream.of(authorEntity).collect(Collectors.toSet());
-        BookEntity bookEntity = BookEntity.builder()
-                .authors(authorsSet)
-                .copies(1)
-                .edition("1st")
-                .name("Nineteen Eighty-Four")
-                .publisher("Secker & Warburg")
-                .genre("Dystopian")
-                .yearPublished("1949")
-                .isbn10("0141393049")
-                .isbn13("9780141393049")
-                .build();
+        bookEntity.setAuthors(authorsSet);
+
         HttpEntity<BookEntity> request = new HttpEntity<>(bookEntity, headers);
         ResponseEntity<String> response = restTemplate.postForEntity("/api/book", request, String.class);
         assertEquals(CREATED, response.getStatusCode());
 
         JsonNode node = new ObjectMapper().readValue(response.getBody(), JsonNode.class);
         String bookId = node.get("id").asText();
-        String authorId = node.get("authors").get(0).get("id").asText();
+        String bookName = node.get("name").asText();
 
         HttpEntity<String> getRequest = new HttpEntity<>(headers);
         ResponseEntity<String> getResponse = restTemplate.exchange("/api/book/" + bookId, GET, getRequest, String.class);
         assertEquals(OK, getResponse.getStatusCode());
-        assertEquals("{\"id\":" + bookId + "," +
-                "\"name\":\"Nineteen Eighty-Four\"," +
-                "\"publisher\":\"Secker & Warburg\"," +
-                "\"copies\":1," +
-                "\"isbn10\":\"0141393049\"," +
-                "\"isbn13\":\"9780141393049\"," +
-                "\"subtitle\":null," +
-                "\"description\":null," +
-                "\"edition\":\"1st\"," +
-                "\"genre\":\"Dystopian\"," +
-                "\"yearPublished\":\"1949\"," +
-                "\"image\":null," +
-                "\"authors\":[{\"id\":" + authorId + ",\"name\":\"George Orwell\"}]}", getResponse.getBody());
+        assertEquals("IT", bookName);
     }
 
     @Test
-    public void deleteBookSuccess() {
-        HttpHeaders headers = setAuthHeader();
+    public void deleteBookSuccess() throws JsonProcessingException {
+        HttpHeaders headers = testHelpers.setAuthHeader();
         AuthorEntity authorEntity = AuthorEntity.builder().name("Stephen King").build();
 
-        HttpEntity<AuthorEntity> authorRequest = new HttpEntity<>(authorEntity, headers);
-        ResponseEntity<String> authorResponse = restTemplate.postForEntity("/api/book/author", authorRequest, String.class);
-        assertEquals(CREATED, authorResponse.getStatusCode());
+        BookEntity bookEntity = testHelpers.generateBook(1,
+                1, "1st", "IT", "Viking", "Horror",
+                "1986", "0670813028", "9780670813025");
 
+        List<BookEntity> bookList = asList(bookEntity);
+        authorEntity.setBooks(bookList);
         Set<AuthorEntity> authorsSet = Stream.of(authorEntity).collect(Collectors.toSet());
-        BookEntity bookEntity = BookEntity.builder()
-                .authors(authorsSet)
-                .copies(1)
-                .edition("1st")
-                .name("IT")
-                .publisher("Viking")
-                .genre("Horror")
-                .yearPublished("1986")
-                .isbn10("0670813028")
-                .isbn13("9780670813025")
-                .build();
+        bookEntity.setAuthors(authorsSet);
 
         HttpEntity<BookEntity> request = new HttpEntity<>(bookEntity, headers);
         ResponseEntity<String> response = restTemplate.postForEntity("/api/book", request, String.class);
-
         assertEquals(CREATED, response.getStatusCode());
 
+        JsonNode node = new ObjectMapper().readValue(response.getBody(), JsonNode.class);
+        String bookId = node.get("id").asText();
+
         HttpEntity<String> deleteBookRequest = new HttpEntity<>(headers);
-        ResponseEntity<String> deleteBookResponse = restTemplate.exchange("/api/book/1", DELETE, deleteBookRequest, String.class);
+        ResponseEntity<String> deleteBookResponse = restTemplate.exchange("/api/book/" + bookId, DELETE, deleteBookRequest, String.class);
         assertEquals(OK, deleteBookResponse.getStatusCode());
         assertEquals("Book Deleted", deleteBookResponse.getBody());
     }
 
     @Test
-    public void updateBookSuccess() throws IOException {
-        HttpHeaders headers = setAuthHeader();
+    public void updateBookSuccess() {
+        HttpHeaders headers = testHelpers.setAuthHeader();
         AuthorEntity authorEntity = AuthorEntity.builder().name("Stephen King").build();
 
-        HttpEntity<AuthorEntity> authorRequest = new HttpEntity<>(authorEntity, headers);
-        ResponseEntity<String> authorResponse = restTemplate.postForEntity("/api/book/author", authorRequest, String.class);
-        assertEquals(CREATED, authorResponse.getStatusCode());
+        BookEntity bookEntity = testHelpers.generateBook(1,
+                1, "1st", "IT", "Viking", "Horror",
+                "1986", "0670813028", "9780670813025");
 
+        List<BookEntity> bookList = asList(bookEntity);
+        authorEntity.setBooks(bookList);
         Set<AuthorEntity> authorsSet = Stream.of(authorEntity).collect(Collectors.toSet());
-        BookEntity bookEntity = BookEntity.builder()
-                .authors(authorsSet)
-                .copies(1)
-                .edition("1st")
-                .name("IT")
-                .publisher("Viking")
-                .genre("Horror")
-                .yearPublished("1986")
-                .isbn10("0670813028")
-                .isbn13("9780670813025")
-                .build();
+        bookEntity.setAuthors(authorsSet);
 
         HttpEntity<BookEntity> request = new HttpEntity<>(bookEntity, headers);
         ResponseEntity<String> response = restTemplate.postForEntity("/api/book", request, String.class);
@@ -206,6 +172,7 @@ public class BookControllerIT {
         BookEntity updatedBookEntity = BookEntity.builder()
                 .authors(authorsSet)
                 .copies(1)
+                .copiesAvailable(10)
                 .edition("10th")
                 .name("IT")
                 .publisher("Viking")
@@ -221,33 +188,219 @@ public class BookControllerIT {
         assertEquals("Book Updated", updatedBookResponse.getBody());
     }
 
-    private ResponseEntity<String> registerAdminUser() {
+    @Test
+    public void withdrawBookSuccess() throws IOException {
+        HttpHeaders headers = testHelpers.setAuthHeader();
+        AuthorEntity authorEntity = AuthorEntity.builder().name("Stephen King").build();
+
+        BookEntity bookEntity = testHelpers.generateBook(1,
+                1, "1st", "IT", "Viking", "Horror",
+                "1986", "0670813028", "9780670813025");
+
+        List<BookEntity> bookList = asList(bookEntity);
+        authorEntity.setBooks(bookList);
+        Set<AuthorEntity> authorsSet = Stream.of(authorEntity).collect(Collectors.toSet());
+        bookEntity.setAuthors(authorsSet);
+
+        HttpEntity<BookEntity> request = new HttpEntity<>(bookEntity, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity("/api/book", request, String.class);
+        assertEquals(CREATED, response.getStatusCode());
+
+        JsonNode node = new ObjectMapper().readValue(response.getBody(), JsonNode.class);
+        Long bookId = node.get("id").asLong();
+
         UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
                 email("test@test.com")
-                .name("book test")
+                .name("User Test")
                 .password("testpass")
-                .username("test")
+                .username("WithdrawUser")
                 .build();
 
         HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest);
-        return restTemplate.postForEntity("/api/auth/register/admin", registerRequest, String.class);
+        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
+        assertEquals(CREATED, registerResponse.getStatusCode());
+
+        String bearerToken = testHelpers.loginUserRetrieveToken("WithdrawUser", "testpass");
+        HttpHeaders withdrawHeaders = new HttpHeaders();
+        withdrawHeaders.setContentType(MediaType.APPLICATION_JSON);
+        withdrawHeaders.set("Authorization", "Bearer " + bearerToken);
+
+        BookLoanRequest bookLoanRequest = BookLoanRequest.builder().bookId(bookId).bookName("IT").username("WithdrawUser").build();
+        HttpEntity<BookLoanRequest> withdrawBookRequest = new HttpEntity<>(bookLoanRequest, withdrawHeaders);
+        ResponseEntity<String> withdrawBookResponse = restTemplate.exchange("/api/book/" + bookId + "/withdraw", POST, withdrawBookRequest, String.class);
+        assertEquals(OK, withdrawBookResponse.getStatusCode());
+        node = new ObjectMapper().readValue(withdrawBookResponse.getBody(), JsonNode.class);
+        String copiesAvailable = node.get("object").get("copiesAvailable").asText();
+        assertEquals("0", copiesAvailable);
     }
 
-    private ResponseEntity<String> loginUserRetrieveToken() {
-        UserLoginRequest userLoginRequest = UserLoginRequest.builder()
+    @Test
+    public void withdraw2BooksSuccess() throws IOException {
+        HttpHeaders headers = testHelpers.setAuthHeader();
+        AuthorEntity authorEntity = AuthorEntity.builder().name("Stephen King").build();
+
+        BookEntity bookEntity = testHelpers.generateBook(1,
+                1, "1st", "IT", "Viking", "Horror",
+                "1986", "0670813028", "9780670813025");
+
+        List<BookEntity> bookList = asList(bookEntity);
+        authorEntity.setBooks(bookList);
+        Set<AuthorEntity> authorsSet = Stream.of(authorEntity).collect(Collectors.toSet());
+        bookEntity.setAuthors(authorsSet);
+
+        HttpEntity<BookEntity> request = new HttpEntity<>(bookEntity, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity("/api/book", request, String.class);
+        assertEquals(CREATED, response.getStatusCode());
+
+        BookEntity bookEntity2 = testHelpers.generateBook(1,
+                1, "1st", "The Shining", "Doubleday", "Horror",
+                "1977", "9781444720723", "978-1444720723");
+
+        bookEntity2.setAuthors(authorsSet);
+
+        HttpEntity<BookEntity> bookRequest2 = new HttpEntity<>(bookEntity2, headers);
+        ResponseEntity<String> bookResponse2 = restTemplate.postForEntity("/api/book", bookRequest2, String.class);
+        assertEquals(CREATED, bookResponse2.getStatusCode());
+
+        JsonNode node = new ObjectMapper().readValue(response.getBody(), JsonNode.class);
+        Long book1Id = node.get("id").asLong();
+
+        node = new ObjectMapper().readValue(bookResponse2.getBody(), JsonNode.class);
+        Long book2Id = node.get("id").asLong();
+
+        UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
+                email("test@test.com")
+                .name("User Test")
                 .password("testpass")
-                .usernameOrEmail("test")
+                .username("WithdrawUser")
                 .build();
 
-        HttpEntity<UserLoginRequest> loginRequest = new HttpEntity<>(userLoginRequest);
-        return restTemplate.postForEntity("/api/auth/login", loginRequest, String.class);
+        HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest);
+        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
+        assertEquals(CREATED, registerResponse.getStatusCode());
+
+        String bearerToken = testHelpers.loginUserRetrieveToken("WithdrawUser", "testpass");
+        HttpHeaders withdrawHeaders = new HttpHeaders();
+        withdrawHeaders.setContentType(MediaType.APPLICATION_JSON);
+        withdrawHeaders.set("Authorization", "Bearer " + bearerToken);
+
+        BookLoanRequest bookLoanRequest = BookLoanRequest.builder().bookId(book1Id).bookName("IT").username("WithdrawUser").build();
+        HttpEntity<BookLoanRequest> withdrawBookRequest = new HttpEntity<>(bookLoanRequest, withdrawHeaders);
+        ResponseEntity<String> withdrawBookResponse = restTemplate.exchange("/api/book/" + book1Id + "/withdraw", POST, withdrawBookRequest, String.class);
+        assertEquals(OK, withdrawBookResponse.getStatusCode());
+
+        node = new ObjectMapper().readValue(withdrawBookResponse.getBody(), JsonNode.class);
+        String book1CopiesAvailable = node.get("object").get("copiesAvailable").asText();
+        assertEquals("0", book1CopiesAvailable);
+
+        BookLoanRequest book2LoanRequest = BookLoanRequest.builder().bookId(book2Id).bookName("The Shining").username("WithdrawUser").build();
+        HttpEntity<BookLoanRequest> withdrawBook2Request = new HttpEntity<>(book2LoanRequest, withdrawHeaders);
+        ResponseEntity<String> withdrawBook2Response = restTemplate.exchange("/api/book/" + book2Id + "/withdraw", POST, withdrawBook2Request, String.class);
+        assertEquals(OK, withdrawBook2Response.getStatusCode());
+
+        node = new ObjectMapper().readValue(withdrawBook2Response.getBody(), JsonNode.class);
+        String book2CopiesAvailable = node.get("object").get("copiesAvailable").asText();
+        assertEquals("0", book2CopiesAvailable);
     }
 
-    private HttpHeaders setAuthHeader() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + bearerToken);
+    @Test
+    public void withdrawBookNoAvailableCopiesFailure() throws IOException {
+        HttpHeaders headers = testHelpers.setAuthHeader();
+        AuthorEntity authorEntity = AuthorEntity.builder().name("Stephen King").build();
 
-        return headers;
+        BookEntity bookEntity = testHelpers.generateBook(1,
+                0, "1st", "IT", "Viking", "Horror",
+                "1986", "0670813028", "9780670813025");
+
+        List<BookEntity> bookList = asList(bookEntity);
+        authorEntity.setBooks(bookList);
+        Set<AuthorEntity> authorsSet = Stream.of(authorEntity).collect(Collectors.toSet());
+        bookEntity.setAuthors(authorsSet);
+
+        HttpEntity<BookEntity> request = new HttpEntity<>(bookEntity, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity("/api/book", request, String.class);
+        assertEquals(CREATED, response.getStatusCode());
+
+        JsonNode node = new ObjectMapper().readValue(response.getBody(), JsonNode.class);
+        Long bookId = node.get("id").asLong();
+
+        UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
+                email("test@test.com")
+                .name("User Test")
+                .password("testpass")
+                .username("WithdrawUser")
+                .build();
+
+        HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest);
+        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
+        assertEquals(CREATED, registerResponse.getStatusCode());
+
+        String bearerToken = testHelpers.loginUserRetrieveToken("WithdrawUser", "testpass");
+        HttpHeaders withdrawHeaders = new HttpHeaders();
+        withdrawHeaders.setContentType(MediaType.APPLICATION_JSON);
+        withdrawHeaders.set("Authorization", "Bearer " + bearerToken);
+
+        BookLoanRequest bookLoanRequest = BookLoanRequest.builder().bookId(bookId).bookName("IT").username("WithdrawUser").build();
+        HttpEntity<BookLoanRequest> withdrawBookRequest = new HttpEntity<>(bookLoanRequest, withdrawHeaders);
+        ResponseEntity<String> withdrawBookResponse = restTemplate.exchange("/api/book/" + bookId + "/withdraw", POST, withdrawBookRequest, String.class);
+        assertEquals(UNPROCESSABLE_ENTITY, withdrawBookResponse.getStatusCode());
+        assertEquals("{\"success\":false," +
+                "\"message\":\"Cannot Withdraw book. Not enough copies available.\"," +
+                "\"object\":null}", withdrawBookResponse.getBody());
+    }
+
+    @Test
+    public void withdrawBookBadIdRequestFailure() throws IOException {
+        HttpHeaders headers = testHelpers.setAuthHeader();
+        AuthorEntity authorEntity = testHelpers.generateAuthor("Stephen King");
+
+        HttpEntity<AuthorEntity> authorRequest = new HttpEntity<>(authorEntity, headers);
+        ResponseEntity<String> authorResponse = restTemplate.postForEntity("/api/book/author", authorRequest, String.class);
+        assertEquals(CREATED, authorResponse.getStatusCode());
+
+        Set<AuthorEntity> authorsSet = Stream.of(authorEntity).collect(Collectors.toSet());
+        BookEntity bookEntity = testHelpers.generateBook(1,
+                1, "1st", "IT", "Viking", "Horror",
+                "1986", "0670813028", "9780670813025");
+
+
+        HttpEntity<BookEntity> request = new HttpEntity<>(bookEntity, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity("/api/book", request, String.class);
+        assertEquals(CREATED, response.getStatusCode());
+
+        JsonNode node = new ObjectMapper().readValue(response.getBody(), JsonNode.class);
+        Long bookId = node.get("id").asLong();
+
+        UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
+                email("test@test.com")
+                .name("User Test")
+                .password("testpass")
+                .username("WithdrawUser")
+                .build();
+
+        HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest);
+        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
+        assertEquals(CREATED, registerResponse.getStatusCode());
+
+        String bearerToken = testHelpers.loginUserRetrieveToken("WithdrawUser", "testpass");
+        HttpHeaders withdrawHeaders = new HttpHeaders();
+        withdrawHeaders.setContentType(MediaType.APPLICATION_JSON);
+        withdrawHeaders.set("Authorization", "Bearer " + bearerToken);
+
+        BookLoanRequest bookLoanRequest = BookLoanRequest.builder().bookId(bookId).bookName("IT").username("WithdrawUser").build();
+        HttpEntity<BookLoanRequest> withdrawBookRequest = new HttpEntity<>(bookLoanRequest, withdrawHeaders);
+        ResponseEntity<String> withdrawBookResponse = restTemplate.exchange("/api/book/1000/withdraw", POST, withdrawBookRequest, String.class);
+        assertEquals(NOT_FOUND, withdrawBookResponse.getStatusCode());
+    }
+
+    @Test
+    public void createAuthorSuccess() {
+        HttpHeaders headers = testHelpers.setAuthHeader();
+        AuthorEntity authorEntity = AuthorEntity.builder().name("George Orwell").build();
+
+        HttpEntity<AuthorEntity> request = new HttpEntity<>(authorEntity, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity("/api/book/author", request, String.class);
+
+        assertEquals(CREATED, response.getStatusCode());
     }
 }

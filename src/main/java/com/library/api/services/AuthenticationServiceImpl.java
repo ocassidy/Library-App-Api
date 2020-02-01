@@ -109,7 +109,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         userRepository.save(user);
 
-        return new ApiResponse(true, "User registered successfully");
+        return new ApiResponse(true, "Admin User registered successfully");
     }
 
     public Object getCurrentUser(Authentication authentication) {

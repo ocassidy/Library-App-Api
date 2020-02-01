@@ -1,21 +1,22 @@
 package com.library.api.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "books")
-public class BookEntity {
+public class BookEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "book_id")
@@ -32,6 +33,11 @@ public class BookEntity {
     @NotNull
     @Column(name = "book_copies")
     private int copies;
+
+    @Min(0)
+    @NotNull
+    @Column(name = "book_copies_available")
+    private int copiesAvailable;
 
     @NotNull
     @Column(name = "book_isbn_ten")
@@ -60,6 +66,13 @@ public class BookEntity {
     @Column(name = "book_image")
     private String image;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "books_authors",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id"))
     private Set<AuthorEntity> authors;
+
+    //@JsonManagedReference("bookEntity")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "book", cascade = CascadeType.ALL)
+    private List<BookLoanEntity> bookLoans;
 }

@@ -1,20 +1,21 @@
 package com.library.api.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
 @Table(name = "authors")
-public class AuthorEntity {
+public class AuthorEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "author_id")
@@ -23,4 +24,8 @@ public class AuthorEntity {
     @NotNull
     @Column(name = "author_name")
     private String name;
+
+    @JsonBackReference
+    @ManyToMany(mappedBy = "authors")
+    private List<BookEntity> books;
 }

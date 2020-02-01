@@ -1,19 +1,23 @@
 package com.library.api.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
+import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Builder
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-public class UserEntity {
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "withdrawnBooks.id")
+public class UserEntity implements Serializable {
     public UserEntity(String name, String username, String email, String password) {
         this.name = name;
         this.username = username;
@@ -42,9 +46,13 @@ public class UserEntity {
     @Column(name = "user_password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<RoleEntity> roles = new HashSet<>();
+    private Set<RoleEntity> roles;
+
+    @JsonManagedReference("userEntity")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userEntity", cascade = CascadeType.ALL)
+    private List<UserLoanEntity> userLoans;
 }

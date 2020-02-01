@@ -15,9 +15,11 @@ public interface BookService {
 
     void deleteBook(Long id);
 
-    Optional<BookEntity> getBook(Long id);
+    BookEntity getBook(Long id);
 
     AuthorEntity addBookAuthor(AuthorEntity authorEntity);
 
     Optional<AuthorEntity> getAuthor(Long id);
+
+    //ApiResponse withdrawBook(BookWithdrawRequest bookWithdrawRequest);
 }

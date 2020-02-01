@@ -37,14 +37,14 @@ public class UserServiceImpl implements UserService {
     public UserEntity getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found with username or email : " + username)
+                        new UsernameNotFoundException("User not found with username: " + username)
                 );
     }
 
     public UserEntity getUserByEmail(String email) {
         return userRepository.findByUsername(email)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found with email or email : " + email)
+                        new UsernameNotFoundException("User not found with email: " + email)
                 );
     }
 
