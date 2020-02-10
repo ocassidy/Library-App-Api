@@ -18,7 +18,9 @@ import java.util.stream.Collectors;
 public class UserPrincipal implements UserDetails {
     private Long id;
 
-    private String name;
+    private String firstName;
+
+    private String lastName;
 
     private String username;
 
@@ -37,7 +39,8 @@ public class UserPrincipal implements UserDetails {
 
         return new UserPrincipal(
                 user.getId(),
-                user.getName(),
+                user.getFirstName(),
+                user.getLastName(),
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),

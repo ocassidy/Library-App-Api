@@ -73,8 +73,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return new ApiResponse(false, EMAIL_TAKEN);
         }
 
-        UserEntity user = new UserEntity(userRegisterRequest.getName(), userRegisterRequest.getUsername(),
-                userRegisterRequest.getEmail(), userRegisterRequest.getPassword());
+        UserEntity user = new UserEntity(userRegisterRequest.getFirstName(), userRegisterRequest.getLastName(),
+                userRegisterRequest.getUsername(), userRegisterRequest.getEmail(), userRegisterRequest.getPassword());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -97,8 +97,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return new ApiResponse(false, EMAIL_TAKEN);
         }
 
-        UserEntity user = new UserEntity(userRegisterRequest.getName(), userRegisterRequest.getUsername(),
-                userRegisterRequest.getEmail(), userRegisterRequest.getPassword());
+        UserEntity user = new UserEntity(userRegisterRequest.getFirstName(), userRegisterRequest.getLastName(),
+                userRegisterRequest.getUsername(), userRegisterRequest.getEmail(), userRegisterRequest.getPassword());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 

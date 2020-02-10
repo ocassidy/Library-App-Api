@@ -31,7 +31,8 @@ public class TestHelpers {
     public ApiResponse registerAdminUser() {
         UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
                 email("testAdmin@test.com")
-                .name("book test")
+                .firstName("book")
+                .lastName("test")
                 .password("testpass")
                 .username("testAdmin")
                 .build();

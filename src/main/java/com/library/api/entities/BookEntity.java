@@ -49,7 +49,7 @@ public class BookEntity implements Serializable {
     @Column(name = "book_subtitle")
     private String subtitle;
 
-    @Column(name = "book_description")
+    @Column(name = "book_description", columnDefinition = "text")
     private String description;
 
     @Column(name = "book_edition")

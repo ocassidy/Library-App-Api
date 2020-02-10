@@ -33,7 +33,7 @@ public class UserController {
     public UserDetailsModel getUserByUsername(@PathVariable String username) {
         UserEntity user = userService.getUserByUsername(username);
 
-        return new UserDetailsModel(user.getId(), user.getUsername(), user.getName(), user.getEmail(), user.getRoles());
+        return new UserDetailsModel(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRoles());
     }
 
     @GetMapping("/users/admin/{email}")
@@ -41,7 +41,7 @@ public class UserController {
     public UserDetailsModel getUserByEmail(@PathVariable String email) {
         UserEntity user = userService.getUserByEmail(email);
 
-        return new UserDetailsModel(user.getId(), user.getUsername(), user.getName(), user.getEmail(), user.getRoles());
+        return new UserDetailsModel(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRoles());
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")

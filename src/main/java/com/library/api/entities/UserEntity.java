@@ -1,5 +1,6 @@
 package com.library.api.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
@@ -16,10 +17,10 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "withdrawnBooks.id")
 public class UserEntity implements Serializable {
-    public UserEntity(String name, String username, String email, String password) {
-        this.name = name;
+    public UserEntity(String firstName, String lastName, String username, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.username = username;
         this.email = email;
         this.password = password;
@@ -31,8 +32,12 @@ public class UserEntity implements Serializable {
     private Long id;
 
     @NotNull
-    @Column(name = "name")
-    private String name;
+    @Column(name = "firstname")
+    private String firstName;
+
+    @NotNull
+    @Column(name = "lastname")
+    private String lastName;
 
     @NotNull
     @Column(name = "username")
@@ -43,6 +48,7 @@ public class UserEntity implements Serializable {
     private String email;
 
     @NotNull
+    @JsonIgnore
     @Column(name = "user_password")
     private String password;
 
@@ -55,4 +61,11 @@ public class UserEntity implements Serializable {
     @JsonManagedReference("userEntity")
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "userEntity", cascade = CascadeType.ALL)
     private List<UserLoanEntity> userLoans;
+
+    private String address1;
+    private String address2;
+    private String city;
+    private String contactNumber;
+    private String registrationDate;
+    private String gender;
 }

@@ -211,7 +211,8 @@ public class BookControllerIT {
 
         UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
                 email("test@test.com")
-                .name("User Test")
+                .firstName("User")
+                .lastName("Test")
                 .password("testpass")
                 .username("WithdrawUser")
                 .build();
@@ -270,7 +271,8 @@ public class BookControllerIT {
 
         UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
                 email("test@test.com")
-                .name("User Test")
+                .firstName("User")
+                .lastName("Test")
                 .password("testpass")
                 .username("WithdrawUser")
                 .build();
@@ -326,7 +328,8 @@ public class BookControllerIT {
 
         UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
                 email("test@test.com")
-                .name("User Test")
+                .firstName("User")
+                .lastName("Test")
                 .password("testpass")
                 .username("WithdrawUser")
                 .build();
@@ -373,7 +376,8 @@ public class BookControllerIT {
 
         UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
                 email("test@test.com")
-                .name("User Test")
+                .firstName("User")
+                .lastName("Test")
                 .password("testpass")
                 .username("WithdrawUser")
                 .build();

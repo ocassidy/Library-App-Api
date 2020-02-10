@@ -56,7 +56,8 @@ public class AuthControllerIT {
     public void registerNewUserSuccess() {
         UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
                 email("123test@test.com")
-                .name("User Test")
+                .firstName("User")
+                .lastName("Test")
                 .password("testpass")
                 .username("registerTest")
                 .build();
@@ -70,7 +71,8 @@ public class AuthControllerIT {
     public void tryRegister2UsersWithSameUsername() {
         UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
                 email("test@test.com")
-                .name("User Test")
+                .firstName("User")
+                .lastName("Test")
                 .password("testpass")
                 .username("registerTest")
                 .build();
@@ -81,7 +83,8 @@ public class AuthControllerIT {
 
         UserRegisterRequest user2ndRegisterRequest = UserRegisterRequest.builder().
                 email("test@test123.com")
-                .name("User Test")
+                .firstName("User")
+                .lastName("Test")
                 .password("testpass")
                 .username("registerTest")
                 .build();
@@ -96,7 +99,8 @@ public class AuthControllerIT {
     public void tryRegister2UsersWithSameEmail() {
         UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
                 email("registerTest@test.com")
-                .name("User Test")
+                .firstName("User")
+                .lastName("Test")
                 .password("testpass")
                 .username("test")
                 .build();
@@ -107,7 +111,8 @@ public class AuthControllerIT {
 
         UserRegisterRequest user2ndRegisterRequest = UserRegisterRequest.builder().
                 email("registerTest@test.com")
-                .name("book test")
+                .firstName("book")
+                .lastName("test")
                 .password("testpass")
                 .username("ocassidy")
                 .build();
@@ -122,7 +127,8 @@ public class AuthControllerIT {
     public void registerNewUserGetCurrentUser() throws IOException {
         UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
                 email("test@test.com")
-                .name("User Test")
+                .firstName("User")
+                .lastName("Test")
                 .password("testpass")
                 .username("NewUser")
                 .build();
@@ -155,7 +161,8 @@ public class AuthControllerIT {
         HttpHeaders presetAdminAuthHeader = testHelpers.setAuthHeader();
         UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
                 email("test@test.com")
-                .name("book test")
+                .firstName("book")
+                .lastName("test")
                 .password("testpass")
                 .username("test")
                 .build();
@@ -169,7 +176,8 @@ public class AuthControllerIT {
     public void register2ndAdminUserAsUserFailure() throws IOException {
         UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
                 email("test@test.com")
-                .name("User Test")
+                .firstName("User")
+                .lastName("Test")
                 .password("testpass")
                 .username("NewUser")
                 .build();
@@ -186,7 +194,8 @@ public class AuthControllerIT {
 
         UserRegisterRequest adminUserRegisterRequest = UserRegisterRequest.builder().
                 email("test@test.com")
-                .name("book test")
+                .firstName("book")
+                .lastName("test")
                 .password("testpass")
                 .username("test")
                 .build();

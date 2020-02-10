@@ -13,7 +13,8 @@ import java.util.Set;
 public class UserDetailsModel {
     private Long id;
     private String username;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String email;
     private Set<RoleEntity> roles;
 }
