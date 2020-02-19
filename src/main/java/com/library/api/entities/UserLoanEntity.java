@@ -3,9 +3,12 @@ package com.library.api.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.List;
 
 @Getter
@@ -30,12 +33,26 @@ public class UserLoanEntity implements Serializable {
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
     private UserEntity userEntity;
 
-//    @Column(name = "fine")
-//    private String fine;
-//
-//    @Column(name = "cost_per_day")
-//    private String costPerDay;
-//
-//    @Column(name = "overdue_by")
-//    private String overdueBy;
+    @Column(name = "fine")
+    private Integer fine;
+
+    @Column(name = "cost_per_day")
+    private Integer costPerDay;
+
+    @Column(name = "overdue_by")
+    private Integer overdueBy;
+
+    @CreationTimestamp
+    @Column(name = "date_withdrawn")
+    private Calendar dateWithdrawn;
+
+    @Column(name = "date_due_back")
+    private Calendar dateDueBack;
+
+    @Column(name = "date_returned")
+    private Calendar dateReturned;
+
+    @NotNull
+    @Column(name = "is_active")
+    private boolean isActive;
 }

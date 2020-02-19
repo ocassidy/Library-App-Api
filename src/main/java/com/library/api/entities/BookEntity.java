@@ -72,7 +72,6 @@ public class BookEntity implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "author_id"))
     private Set<AuthorEntity> authors;
 
-    //@JsonManagedReference("bookEntity")
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "book", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "book", cascade = CascadeType.ALL)
     private List<BookLoanEntity> bookLoans;
 }

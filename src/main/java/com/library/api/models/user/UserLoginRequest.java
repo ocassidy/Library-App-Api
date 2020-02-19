@@ -1,4 +1,4 @@
-package com.library.api.models;
+package com.library.api.models.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.library.api.models.Book;
+package com.library.api.models.book;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,8 +14,6 @@ import javax.validation.constraints.NotNull;
 public class BookLoanRequest {
     @NotNull
     private Long bookId;
-
-    private String bookName;
 
     @NotNull
     private String username;

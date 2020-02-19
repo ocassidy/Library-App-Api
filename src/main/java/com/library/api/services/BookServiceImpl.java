@@ -3,18 +3,18 @@ package com.library.api.services;
 import com.library.api.entities.*;
 import com.library.api.exceptions.ResourceNotFoundException;
 import com.library.api.models.ApiResponse;
-import com.library.api.models.Book.BookLoanId;
-import com.library.api.models.Book.BookLoanRequest;
+import com.library.api.models.book.BookLoanId;
+import com.library.api.models.book.BookLoanRequest;
+import com.library.api.models.book.BookReturnRequest;
 import com.library.api.repositories.AuthorRepository;
 import com.library.api.repositories.BookLoanRepository;
 import com.library.api.repositories.BookRepository;
 import com.library.api.repositories.UserLoanRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -70,8 +70,8 @@ public class BookServiceImpl implements BookService {
         return authorRepository.findById(id);
     }
 
-    public ApiResponse withdrawBook(Long id, BookLoanRequest bookLoanRequest) {
-        BookEntity bookToWithdraw = getBook(id);
+    public ApiResponse loanBook(BookLoanRequest bookLoanRequest) {
+        BookEntity bookToWithdraw = getBook(bookLoanRequest.getBookId());
 
         if (bookToWithdraw.getCopies() < 1) {
             return new ApiResponse(false, "Cannot Withdraw book. Not enough copies in stock.");
@@ -81,11 +81,20 @@ public class BookServiceImpl implements BookService {
             return new ApiResponse(false, "Cannot Withdraw book. Not enough copies available.");
         }
 
+        final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Calendar calendar = Calendar.getInstance();
+        Date currentDate = new Date();
+        dateFormat.format(currentDate);
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.MONTH, 3);
+
         UserEntity userEntity = userService.getUserByUsername(bookLoanRequest.getUsername());
         BookLoanEntity bookLoanEntity = BookLoanEntity.builder().build();
 
         UserLoanEntity userLoanEntity = UserLoanEntity.builder()
                 .userEntity(userEntity)
+                .isActive(true)
+                .dateDueBack(calendar)
                 .build();
 
         UserLoanEntity savedUserLoan = userLoanRepository.save(userLoanEntity);
@@ -97,14 +106,47 @@ public class BookServiceImpl implements BookService {
         bookLoanId.setBookId(bookToWithdraw.getId());
         bookLoanId.setUserLoanId(savedUserLoan.getId());
         bookLoanEntity.setBookLoanId(bookLoanId);
-        bookLoanRepository.save(bookLoanEntity);
+        BookLoanEntity savedBookLoanEntity = bookLoanRepository.save(bookLoanEntity);
         List<BookLoanEntity> bookLoanEntities = new ArrayList<>();
-        bookLoanEntities.add(bookLoanEntity);
+        bookLoanEntities.add(savedBookLoanEntity);
         savedUserLoan.setBookLoans(bookLoanEntities);
         userLoanRepository.save(savedUserLoan);
         bookToWithdraw.setCopiesAvailable(bookToWithdraw.getCopiesAvailable() - 1);
+        bookToWithdraw.setBookLoans(bookLoanEntities);
         bookRepository.save(bookToWithdraw);
 
         return new ApiResponse(true, "Book Successfully Withdrawn.", bookToWithdraw);
+    }
+
+    public ApiResponse returnBook(BookReturnRequest bookReturnRequest) {
+        BookEntity bookToReturn = getBook(bookReturnRequest.getBookId());
+
+        UserEntity userEntity = userService.getUserByUsername(bookReturnRequest.getUsername());
+
+        final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Calendar calendar = Calendar.getInstance();
+        Date currentDate = new Date();
+        dateFormat.format(currentDate);
+        calendar.setTime(currentDate);
+
+        Optional<UserLoanEntity> optionalUserLoanEntity = userLoanRepository.findById(bookReturnRequest.getLoanId());
+
+        UserLoanEntity userLoanEntity = optionalUserLoanEntity.get();
+        userLoanEntity.setId(bookReturnRequest.getLoanId());
+        userLoanEntity.setActive(true);
+        userLoanEntity.setUserEntity(userEntity);
+        userLoanEntity.setDateReturned(calendar);
+
+        UserLoanEntity savedUserLoan = userLoanRepository.save(userLoanEntity);
+        BookLoanId bookLoanId = new BookLoanId();
+
+        bookLoanId.setBookId(bookReturnRequest.getBookId());
+        bookLoanId.setUserLoanId(bookReturnRequest.getLoanId());
+        userLoanRepository.save(savedUserLoan);
+        bookToReturn.setCopiesAvailable(bookToReturn.getCopiesAvailable() + 1);
+        bookRepository.save(bookToReturn);
+
+        return new ApiResponse(true, "Book Successfully Returned.", bookToReturn);
+
     }
 }

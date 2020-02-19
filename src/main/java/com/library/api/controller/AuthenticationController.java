@@ -2,8 +2,8 @@ package com.library.api.controller;
 
 import com.library.api.models.ApiResponse;
 import com.library.api.models.JwtAuthenticationResponse;
-import com.library.api.models.UserLoginRequest;
-import com.library.api.models.UserRegisterRequest;
+import com.library.api.models.user.UserLoginRequest;
+import com.library.api.models.user.UserRegisterRequest;
 import com.library.api.services.AuthenticationServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

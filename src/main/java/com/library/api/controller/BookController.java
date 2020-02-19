@@ -3,7 +3,8 @@ package com.library.api.controller;
 import com.library.api.entities.AuthorEntity;
 import com.library.api.entities.BookEntity;
 import com.library.api.models.ApiResponse;
-import com.library.api.models.Book.BookLoanRequest;
+import com.library.api.models.book.BookLoanRequest;
+import com.library.api.models.book.BookReturnRequest;
 import com.library.api.services.BookServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -70,10 +71,21 @@ public class BookController {
     }
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    @PostMapping("/book/{id}/withdraw")
-    public ResponseEntity<ApiResponse> withdrawBook(@PathVariable Long id,
-                                                    @RequestBody @Valid BookLoanRequest bookLoanRequest) {
-        ApiResponse apiResponse = bookService.withdrawBook(id, bookLoanRequest);
+    @PostMapping("/book/loan")
+    public ResponseEntity<ApiResponse> loanBook(@RequestBody @Valid BookLoanRequest bookLoanRequest) {
+        ApiResponse apiResponse = bookService.loanBook(bookLoanRequest);
+
+        if (!apiResponse.getSuccess()) {
+            return new ResponseEntity<>(apiResponse, UNPROCESSABLE_ENTITY);
+        }
+
+        return new ResponseEntity<>(apiResponse, OK);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    @PostMapping("/book/return")
+    public ResponseEntity<ApiResponse> returnBook(@RequestBody @Valid BookReturnRequest bookReturnRequest) {
+        ApiResponse apiResponse = bookService.returnBook(bookReturnRequest);
 
         if (!apiResponse.getSuccess()) {
             return new ResponseEntity<>(apiResponse, UNPROCESSABLE_ENTITY);

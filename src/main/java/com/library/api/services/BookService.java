@@ -2,6 +2,9 @@ package com.library.api.services;
 
 import com.library.api.entities.AuthorEntity;
 import com.library.api.entities.BookEntity;
+import com.library.api.models.ApiResponse;
+import com.library.api.models.book.BookLoanRequest;
+import com.library.api.models.book.BookReturnRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,5 +24,7 @@ public interface BookService {
 
     Optional<AuthorEntity> getAuthor(Long id);
 
-    //ApiResponse withdrawBook(BookWithdrawRequest bookWithdrawRequest);
+    ApiResponse loanBook(BookLoanRequest bookLoanRequest);
+
+    ApiResponse returnBook(BookReturnRequest bookReturnRequest);
 }

@@ -3,10 +3,12 @@ package com.library.api.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +42,7 @@ public class UserEntity implements Serializable {
     private String lastName;
 
     @NotNull
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     private String username;
 
     @NotNull
@@ -66,6 +68,7 @@ public class UserEntity implements Serializable {
     private String address2;
     private String city;
     private String contactNumber;
-    private String registrationDate;
+    @CreationTimestamp
+    private Calendar registrationDate;
     private String gender;
 }

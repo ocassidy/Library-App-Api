@@ -1,4 +1,4 @@
-package com.library.api.models.Book;
+package com.library.api.models.book;
 
 import com.library.api.entities.AuthorEntity;
 

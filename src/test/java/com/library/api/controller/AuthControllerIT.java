@@ -2,8 +2,8 @@ package com.library.api.controller;
 
 import com.library.api.helpers.TestHelpers;
 import com.library.api.models.ApiResponse;
-import com.library.api.models.UserLoginRequest;
-import com.library.api.models.UserRegisterRequest;
+import com.library.api.models.user.UserLoginRequest;
+import com.library.api.models.user.UserRegisterRequest;
 import com.library.api.repositories.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

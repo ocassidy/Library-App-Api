@@ -7,8 +7,9 @@ import com.library.api.entities.AuthorEntity;
 import com.library.api.entities.BookEntity;
 import com.library.api.helpers.TestHelpers;
 import com.library.api.models.ApiResponse;
-import com.library.api.models.Book.BookLoanRequest;
-import com.library.api.models.UserRegisterRequest;
+import com.library.api.models.book.BookLoanRequest;
+import com.library.api.models.book.BookReturnRequest;
+import com.library.api.models.user.UserRegisterRequest;
 import com.library.api.repositories.AuthorRepository;
 import com.library.api.repositories.BookRepository;
 import com.library.api.repositories.UserRepository;
@@ -226,9 +227,9 @@ public class BookControllerIT {
         withdrawHeaders.setContentType(MediaType.APPLICATION_JSON);
         withdrawHeaders.set("Authorization", "Bearer " + bearerToken);
 
-        BookLoanRequest bookLoanRequest = BookLoanRequest.builder().bookId(bookId).bookName("IT").username("WithdrawUser").build();
+        BookLoanRequest bookLoanRequest = BookLoanRequest.builder().bookId(bookId).username("WithdrawUser").build();
         HttpEntity<BookLoanRequest> withdrawBookRequest = new HttpEntity<>(bookLoanRequest, withdrawHeaders);
-        ResponseEntity<String> withdrawBookResponse = restTemplate.exchange("/api/book/" + bookId + "/withdraw", POST, withdrawBookRequest, String.class);
+        ResponseEntity<String> withdrawBookResponse = restTemplate.exchange("/api/book/loan", POST, withdrawBookRequest, String.class);
         assertEquals(OK, withdrawBookResponse.getStatusCode());
         node = new ObjectMapper().readValue(withdrawBookResponse.getBody(), JsonNode.class);
         String copiesAvailable = node.get("object").get("copiesAvailable").asText();
@@ -286,18 +287,18 @@ public class BookControllerIT {
         withdrawHeaders.setContentType(MediaType.APPLICATION_JSON);
         withdrawHeaders.set("Authorization", "Bearer " + bearerToken);
 
-        BookLoanRequest bookLoanRequest = BookLoanRequest.builder().bookId(book1Id).bookName("IT").username("WithdrawUser").build();
+        BookLoanRequest bookLoanRequest = BookLoanRequest.builder().bookId(book1Id).username("WithdrawUser").build();
         HttpEntity<BookLoanRequest> withdrawBookRequest = new HttpEntity<>(bookLoanRequest, withdrawHeaders);
-        ResponseEntity<String> withdrawBookResponse = restTemplate.exchange("/api/book/" + book1Id + "/withdraw", POST, withdrawBookRequest, String.class);
+        ResponseEntity<String> withdrawBookResponse = restTemplate.exchange("/api/book/loan", POST, withdrawBookRequest, String.class);
         assertEquals(OK, withdrawBookResponse.getStatusCode());
 
         node = new ObjectMapper().readValue(withdrawBookResponse.getBody(), JsonNode.class);
         String book1CopiesAvailable = node.get("object").get("copiesAvailable").asText();
         assertEquals("0", book1CopiesAvailable);
 
-        BookLoanRequest book2LoanRequest = BookLoanRequest.builder().bookId(book2Id).bookName("The Shining").username("WithdrawUser").build();
+        BookLoanRequest book2LoanRequest = BookLoanRequest.builder().bookId(book2Id).username("WithdrawUser").build();
         HttpEntity<BookLoanRequest> withdrawBook2Request = new HttpEntity<>(book2LoanRequest, withdrawHeaders);
-        ResponseEntity<String> withdrawBook2Response = restTemplate.exchange("/api/book/" + book2Id + "/withdraw", POST, withdrawBook2Request, String.class);
+        ResponseEntity<String> withdrawBook2Response = restTemplate.exchange("/api/book/loan", POST, withdrawBook2Request, String.class);
         assertEquals(OK, withdrawBook2Response.getStatusCode());
 
         node = new ObjectMapper().readValue(withdrawBook2Response.getBody(), JsonNode.class);
@@ -343,9 +344,9 @@ public class BookControllerIT {
         withdrawHeaders.setContentType(MediaType.APPLICATION_JSON);
         withdrawHeaders.set("Authorization", "Bearer " + bearerToken);
 
-        BookLoanRequest bookLoanRequest = BookLoanRequest.builder().bookId(bookId).bookName("IT").username("WithdrawUser").build();
+        BookLoanRequest bookLoanRequest = BookLoanRequest.builder().bookId(bookId).username("WithdrawUser").build();
         HttpEntity<BookLoanRequest> withdrawBookRequest = new HttpEntity<>(bookLoanRequest, withdrawHeaders);
-        ResponseEntity<String> withdrawBookResponse = restTemplate.exchange("/api/book/" + bookId + "/withdraw", POST, withdrawBookRequest, String.class);
+        ResponseEntity<String> withdrawBookResponse = restTemplate.exchange("/api/book/loan", POST, withdrawBookRequest, String.class);
         assertEquals(UNPROCESSABLE_ENTITY, withdrawBookResponse.getStatusCode());
         assertEquals("{\"success\":false," +
                 "\"message\":\"Cannot Withdraw book. Not enough copies available.\"," +
@@ -391,9 +392,9 @@ public class BookControllerIT {
         withdrawHeaders.setContentType(MediaType.APPLICATION_JSON);
         withdrawHeaders.set("Authorization", "Bearer " + bearerToken);
 
-        BookLoanRequest bookLoanRequest = BookLoanRequest.builder().bookId(bookId).bookName("IT").username("WithdrawUser").build();
+        BookLoanRequest bookLoanRequest = BookLoanRequest.builder().bookId(1000L).username("WithdrawUser").build();
         HttpEntity<BookLoanRequest> withdrawBookRequest = new HttpEntity<>(bookLoanRequest, withdrawHeaders);
-        ResponseEntity<String> withdrawBookResponse = restTemplate.exchange("/api/book/1000/withdraw", POST, withdrawBookRequest, String.class);
+        ResponseEntity<String> withdrawBookResponse = restTemplate.exchange("/api/book/loan", POST, withdrawBookRequest, String.class);
         assertEquals(NOT_FOUND, withdrawBookResponse.getStatusCode());
     }
 
@@ -406,5 +407,63 @@ public class BookControllerIT {
         ResponseEntity<String> response = restTemplate.postForEntity("/api/book/author", request, String.class);
 
         assertEquals(CREATED, response.getStatusCode());
+    }
+
+    @Test
+    public void returnBookSuccess() throws IOException {
+        HttpHeaders headers = testHelpers.setAuthHeader();
+        AuthorEntity authorEntity = AuthorEntity.builder().name("Stephen King").build();
+
+        BookEntity bookEntity = testHelpers.generateBook(1,
+                1, "1st", "IT", "Viking", "Horror",
+                "1986", "0670813028", "9780670813025");
+
+        List<BookEntity> bookList = asList(bookEntity);
+        authorEntity.setBooks(bookList);
+        Set<AuthorEntity> authorsSet = Stream.of(authorEntity).collect(Collectors.toSet());
+        bookEntity.setAuthors(authorsSet);
+
+        HttpEntity<BookEntity> request = new HttpEntity<>(bookEntity, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity("/api/book", request, String.class);
+        assertEquals(CREATED, response.getStatusCode());
+
+        JsonNode node = new ObjectMapper().readValue(response.getBody(), JsonNode.class);
+        Long bookId = node.get("id").asLong();
+
+        UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder().
+                email("test@test.com")
+                .firstName("User")
+                .lastName("Test")
+                .password("testpass")
+                .username("WithdrawUser")
+                .build();
+
+        HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest);
+        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
+        assertEquals(CREATED, registerResponse.getStatusCode());
+
+        String bearerToken = testHelpers.loginUserRetrieveToken("WithdrawUser", "testpass");
+        HttpHeaders withdrawReturnHeaders = new HttpHeaders();
+        withdrawReturnHeaders.setContentType(MediaType.APPLICATION_JSON);
+        withdrawReturnHeaders.set("Authorization", "Bearer " + bearerToken);
+
+        BookLoanRequest bookLoanRequest = BookLoanRequest.builder().bookId(bookId).username("WithdrawUser").build();
+        HttpEntity<BookLoanRequest> withdrawBookRequest = new HttpEntity<>(bookLoanRequest, withdrawReturnHeaders);
+        ResponseEntity<String> withdrawBookResponse = restTemplate.exchange("/api/book/loan", POST, withdrawBookRequest, String.class);
+        assertEquals(OK, withdrawBookResponse.getStatusCode());
+        node = new ObjectMapper().readValue(withdrawBookResponse.getBody(), JsonNode.class);
+        String withdrawCopiesAvailable = node.get("object").get("copiesAvailable").asText();
+        assertEquals("0", withdrawCopiesAvailable);
+
+        node = new ObjectMapper().readValue(withdrawBookResponse.getBody(), JsonNode.class);
+        Long loanId = node.get("object").get("bookLoans").get(0).get("bookLoanId").get("userLoanId").asLong();
+
+        BookReturnRequest bookReturnRequest = BookReturnRequest.builder().bookId(bookId).loanId(loanId).username("WithdrawUser").build();
+        HttpEntity<BookReturnRequest> returnBookRequest = new HttpEntity<>(bookReturnRequest, withdrawReturnHeaders);
+        ResponseEntity<String> returnBookResponse = restTemplate.exchange("/api/book/return", POST, returnBookRequest, String.class);
+        assertEquals(OK, returnBookResponse.getStatusCode());
+        node = new ObjectMapper().readValue(returnBookResponse.getBody(), JsonNode.class);
+        String returnCopiesAvailable = node.get("object").get("copiesAvailable").asText();
+        assertEquals("1", returnCopiesAvailable);
     }
 }
