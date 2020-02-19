@@ -20,7 +20,7 @@ jobs:
       - run: sudo apt-get install postgresql-client-9.6
       - run: whoami
       - run: |
-          psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE librarydb_test;"
+          psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE library_db_test;"
       - restore_cache:
           key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
       - restore_cache:
