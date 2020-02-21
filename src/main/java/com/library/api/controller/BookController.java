@@ -75,7 +75,7 @@ public class BookController {
     public ResponseEntity<ApiResponse> loanBook(@RequestBody @Valid BookLoanRequest bookLoanRequest) {
         ApiResponse apiResponse = bookService.loanBook(bookLoanRequest);
 
-        if (Boolean.FALSE.equals(apiResponse.getSuccess())) {
+        if (!apiResponse.getSuccess()) {
             return new ResponseEntity<>(apiResponse, UNPROCESSABLE_ENTITY);
         }
 
@@ -87,7 +87,7 @@ public class BookController {
     public ResponseEntity<ApiResponse> returnBook(@RequestBody @Valid BookReturnRequest bookReturnRequest) {
         ApiResponse apiResponse = bookService.returnBook(bookReturnRequest);
 
-        if (Boolean.FALSE.equals(apiResponse.getSuccess())) {
+        if (!apiResponse.getSuccess()) {
             return new ResponseEntity<>(apiResponse, UNPROCESSABLE_ENTITY);
         }
 
