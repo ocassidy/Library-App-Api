@@ -131,22 +131,27 @@ public class BookServiceImpl implements BookService {
 
         Optional<UserLoanEntity> optionalUserLoanEntity = userLoanRepository.findById(bookReturnRequest.getLoanId());
 
-        UserLoanEntity userLoanEntity = optionalUserLoanEntity.get();
-        userLoanEntity.setId(bookReturnRequest.getLoanId());
-        userLoanEntity.setActive(true);
-        userLoanEntity.setUserEntity(userEntity);
-        userLoanEntity.setDateReturned(calendar);
+        if (userLoanRepository.findById(bookReturnRequest.getLoanId()).isPresent()) {
+            UserLoanEntity userLoanEntity = optionalUserLoanEntity.get();
+            userLoanEntity.setId(bookReturnRequest.getLoanId());
+            userLoanEntity.setActive(true);
+            userLoanEntity.setUserEntity(userEntity);
+            userLoanEntity.setDateReturned(calendar);
 
-        UserLoanEntity savedUserLoan = userLoanRepository.save(userLoanEntity);
-        BookLoanId bookLoanId = new BookLoanId();
+            UserLoanEntity savedUserLoan = userLoanRepository.save(userLoanEntity);
+            BookLoanId bookLoanId = new BookLoanId();
 
-        bookLoanId.setBookId(bookReturnRequest.getBookId());
-        bookLoanId.setUserLoanId(bookReturnRequest.getLoanId());
-        userLoanRepository.save(savedUserLoan);
-        bookToReturn.setCopiesAvailable(bookToReturn.getCopiesAvailable() + 1);
-        bookRepository.save(bookToReturn);
+            bookLoanId.setBookId(bookReturnRequest.getBookId());
+            bookLoanId.setUserLoanId(bookReturnRequest.getLoanId());
+            userLoanRepository.save(savedUserLoan);
+            bookToReturn.setCopiesAvailable(bookToReturn.getCopiesAvailable() + 1);
+            bookRepository.save(bookToReturn);
 
-        return new ApiResponse(true, "Book Successfully Returned.", bookToReturn);
+            return new ApiResponse(true, "Book Successfully Returned.", bookToReturn);
+        }
+
+
+        return new ApiResponse(false, "Book Return Failed.", bookToReturn);
 
     }
 }

@@ -1,6 +1,6 @@
 package com.library.api.models.analytics;
 
-public interface GetTotalLoansResponse {
+public interface GetAllLoanDetails {
     Long getBookId();
     String getBookName();
     Long getNumberOfLoans();

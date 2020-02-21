@@ -33,7 +33,7 @@ public class AuthenticationController {
     public ResponseEntity<ApiResponse> registerUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
         ApiResponse apiResponse = authenticationService.registerUser(userRegisterRequest);
 
-        if (!apiResponse.getSuccess()) {
+        if (Boolean.FALSE.equals(apiResponse.getSuccess())) {
             return new ResponseEntity<>(apiResponse, BAD_REQUEST);
         }
 

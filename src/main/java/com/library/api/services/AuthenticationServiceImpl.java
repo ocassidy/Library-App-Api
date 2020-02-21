@@ -65,11 +65,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     public ApiResponse registerUser(UserRegisterRequest userRegisterRequest) {
-        if (userRepository.existsByUsername(userRegisterRequest.getUsername())) {
+        if (Boolean.FALSE.equals(userRepository.existsByUsername(userRegisterRequest.getUsername()))) {
             return new ApiResponse(false, USERNAME_TAKEN);
         }
 
-        if (userRepository.existsByEmail(userRegisterRequest.getEmail())) {
+        if (Boolean.FALSE.equals(userRepository.existsByEmail(userRegisterRequest.getEmail()))) {
             return new ApiResponse(false, EMAIL_TAKEN);
         }
 
@@ -89,11 +89,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     public ApiResponse registerAdminUser(UserRegisterRequest userRegisterRequest) {
-        if (userRepository.existsByUsername(userRegisterRequest.getUsername())) {
+        if (Boolean.TRUE.equals(userRepository.existsByUsername(userRegisterRequest.getUsername()))) {
             return new ApiResponse(false, USERNAME_TAKEN);
         }
 
-        if (userRepository.existsByEmail(userRegisterRequest.getEmail())) {
+        if (Boolean.TRUE.equals(userRepository.existsByEmail(userRegisterRequest.getEmail()))) {
             return new ApiResponse(false, EMAIL_TAKEN);
         }
 
