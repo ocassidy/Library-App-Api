@@ -4,7 +4,6 @@ import com.library.api.models.analytics.AnalyticsResponse;
 import com.library.api.models.analytics.GetAllLoanDetails;
 import com.library.api.repositories.BookLoanRepository;
 import com.library.api.repositories.BookRepository;
-import com.library.api.repositories.UserLoanRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,14 +12,11 @@ import java.util.List;
 public class AnalyticsServiceImpl implements AnalyticsService {
     private BookRepository bookRepository;
     private BookLoanRepository bookLoanRepository;
-    private UserLoanRepository userLoanRepository;
 
     public AnalyticsServiceImpl(BookRepository bookRepository,
-                                BookLoanRepository bookLoanRepository,
-                                UserLoanRepository userLoanRepository) {
+                                BookLoanRepository bookLoanRepository) {
         this.bookRepository = bookRepository;
         this.bookLoanRepository = bookLoanRepository;
-        this.userLoanRepository = userLoanRepository;
     }
 
     public Long getBookCount() {

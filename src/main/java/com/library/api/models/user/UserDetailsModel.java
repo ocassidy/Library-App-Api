@@ -1,4 +1,4 @@
-package com.library.api.models;
+package com.library.api.models.user;
 
 import com.library.api.entities.RoleEntity;
 import lombok.AllArgsConstructor;

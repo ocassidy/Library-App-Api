@@ -2,7 +2,7 @@ package com.library.api.controller;
 
 import com.library.api.entities.UserEntity;
 import com.library.api.models.ApiResponse;
-import com.library.api.models.UserDetailsModel;
+import com.library.api.models.user.UserDetailsModel;
 import com.library.api.services.UserServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -2,7 +2,7 @@ package com.library.api.services;
 
 import com.library.api.entities.UserEntity;
 import com.library.api.models.ApiResponse;
-import com.library.api.models.UserDetailsModel;
+import com.library.api.models.user.UserDetailsModel;
 import com.library.api.repositories.UserRepository;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

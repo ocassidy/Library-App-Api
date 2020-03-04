@@ -18,7 +18,6 @@ public class BookLoanEntity implements Serializable {
     @EmbeddedId
     private BookLoanId bookLoanId;
 
-    //@JsonBackReference("bookEntity")
     @MapsId("userLoanId")
     @JoinColumn(name = "loan_id")
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})

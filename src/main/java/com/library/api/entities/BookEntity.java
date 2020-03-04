@@ -30,6 +30,7 @@ public class BookEntity implements Serializable {
     @Column(name = "book_publisher")
     private String publisher;
 
+    @Min(0)
     @NotNull
     @Column(name = "book_copies")
     private int copies;
