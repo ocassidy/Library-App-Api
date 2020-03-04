@@ -74,7 +74,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         UserEntity user = new UserEntity(userRegisterRequest.getFirstName(), userRegisterRequest.getLastName(),
-                userRegisterRequest.getUsername().toLowerCase(), userRegisterRequest.getEmail(), userRegisterRequest.getPassword());
+                userRegisterRequest.getUsername(), userRegisterRequest.getEmail(), userRegisterRequest.getPassword());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
