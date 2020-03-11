@@ -2,10 +2,13 @@ package com.library.api.controller;
 
 import com.library.api.entities.AuthorEntity;
 import com.library.api.entities.BookEntity;
+import com.library.api.exceptions.ResourceNotFoundException;
 import com.library.api.models.ApiResponse;
 import com.library.api.models.book.BookLoanRequest;
+import com.library.api.models.book.BookPageResponse;
 import com.library.api.models.book.BookReturnRequest;
 import com.library.api.services.BookServiceImpl;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +38,16 @@ public class BookController {
     @GetMapping("/books")
     public ResponseEntity<List<BookEntity>> getAllBooks() {
         return new ResponseEntity<>(bookService.getAllBooks(), OK);
+    }
+
+    @GetMapping("/books-paged")
+    public ResponseEntity<Iterable<BookPageResponse>> getAllBooksPaged(@RequestParam("page") int page, @RequestParam("size") int size) {
+        Page<BookPageResponse> resultPage = bookService.findPaginated(page, size);
+        if (page > resultPage.getTotalPages()) {
+            throw new ResourceNotFoundException("Page size exceeds total pages.");
+        }
+
+        return new ResponseEntity<>(resultPage, OK);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")

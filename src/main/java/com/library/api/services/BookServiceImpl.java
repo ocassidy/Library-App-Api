@@ -2,14 +2,15 @@ package com.library.api.services;
 
 import com.library.api.entities.*;
 import com.library.api.exceptions.ResourceNotFoundException;
+import com.library.api.mappers.BookPageMapper;
 import com.library.api.models.ApiResponse;
 import com.library.api.models.book.BookLoanId;
 import com.library.api.models.book.BookLoanRequest;
+import com.library.api.models.book.BookPageResponse;
 import com.library.api.models.book.BookReturnRequest;
-import com.library.api.repositories.AuthorRepository;
-import com.library.api.repositories.BookLoanRepository;
-import com.library.api.repositories.BookRepository;
-import com.library.api.repositories.UserLoanRepository;
+import com.library.api.repositories.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
@@ -23,17 +24,23 @@ public class BookServiceImpl implements BookService {
     private UserLoanRepository userLoanRepository;
     private BookLoanRepository bookLoanRepository;
     private UserService userService;
+    private BookPageRepository bookPageRepository;
+    private BookPageMapper bookPageMapper;
 
     public BookServiceImpl(BookRepository bookRepository,
                            AuthorRepository authorRepository,
                            UserLoanRepository userLoanRepository,
                            BookLoanRepository bookLoanRepository,
-                           UserService userService) {
+                           UserService userService,
+                           BookPageRepository bookPageRepository,
+                           BookPageMapper bookPageMapper) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.userLoanRepository = userLoanRepository;
         this.bookLoanRepository = bookLoanRepository;
         this.userService = userService;
+        this.bookPageRepository = bookPageRepository;
+        this.bookPageMapper = bookPageMapper;
     }
 
     public BookEntity getBook(Long id) {
@@ -48,6 +55,12 @@ public class BookServiceImpl implements BookService {
         }
 
         return bookRepository.findAll();
+    }
+
+    public Page<BookPageResponse> findPaginated(int page, int size) {
+        PageRequest pageReq = PageRequest.of(page, size);
+        Page<BookEntity> resultPage = bookPageRepository.findAll(pageReq);
+        return bookPageMapper.mapEntitiesToBookPage(resultPage);
     }
 
     public BookEntity addBook(BookEntity bookEntity) {
@@ -149,9 +162,6 @@ public class BookServiceImpl implements BookService {
 
             return new ApiResponse(true, "Book Successfully Returned.", bookToReturn);
         }
-
-
         return new ApiResponse(false, "Book Return Failed.", bookToReturn);
-
     }
 }
