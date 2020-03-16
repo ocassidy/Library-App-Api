@@ -70,9 +70,9 @@ workflows:
           - requires:
               - build-test
       - deploy-staging:
-          requires:
-            - build-test
-            - deploy-integration
+          - requires:
+              - build-test
+              - deploy-integration
           filters:
             branches:
               only: master
