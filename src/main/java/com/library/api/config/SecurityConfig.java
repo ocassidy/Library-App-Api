@@ -1,8 +1,8 @@
 package com.library.api.config;
 
-import com.library.api.services.CustomUserDetailsService;
 import com.library.api.security.JwtAuthenticationEntryPoint;
 import com.library.api.security.JwtAuthenticationFilter;
+import com.library.api.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,8 +22,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.Collections;
+
+import static java.util.Arrays.asList;
 
 @Configuration
 @EnableWebSecurity
@@ -110,7 +111,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://staging-library-app.herokuapp.com"));
+        configuration.setAllowedOrigins(
+                asList("http://localhost:3000",
+                        "https://integration-library-app.herokuapp.com",
+                        "https://staging-library-app.herokuapp.com"));
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowedHeaders(Collections.singletonList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
