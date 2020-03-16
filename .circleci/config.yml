@@ -71,7 +71,7 @@ workflows:
             - build-test
       - deploy-staging:
           requires:
-            - build
+            - build-test
             - deploy-integration
           filters:
             branches:
