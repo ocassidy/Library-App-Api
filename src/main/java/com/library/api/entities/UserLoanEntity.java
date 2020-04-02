@@ -1,7 +1,7 @@
 package com.library.api.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -24,7 +24,7 @@ public class UserLoanEntity implements Serializable {
     @Column(name = "loan_id")
     private Long id;
 
-    @JsonIgnore
+    @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "userLoan")
     private List<BookLoanEntity> bookLoans;
 

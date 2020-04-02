@@ -3,7 +3,10 @@ package com.library.api.services;
 import com.library.api.entities.UserEntity;
 import com.library.api.models.ApiResponse;
 import com.library.api.models.user.UserDetailsModel;
+import com.library.api.models.user.UserLoanDetails;
 import com.library.api.repositories.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -51,5 +54,15 @@ public class UserServiceImpl implements UserService {
     public ApiResponse updateUser(UserEntity userEntity) {
         userRepository.save(userEntity);
         return new ApiResponse(true, "User updated successfully");
+    }
+
+    public Page<UserLoanDetails> getActiveUserLoans(String username, int page, int size) {
+        PageRequest pageReq = PageRequest.of(page, size);
+        return userRepository.getActiveUserLoanDetails(username, pageReq);
+    }
+
+    public Page<UserLoanDetails> getInactiveUserLoans(String username, int page, int size) {
+        PageRequest pageReq = PageRequest.of(page, size);
+        return userRepository.getInactiveUserLoanDetails(username, pageReq);
     }
 }

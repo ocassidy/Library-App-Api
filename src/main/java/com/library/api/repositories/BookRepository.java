@@ -3,14 +3,15 @@ package com.library.api.repositories;
 import com.library.api.entities.BookEntity;
 import com.library.api.models.analytics.GetAllLoanDetails;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface BookRepository extends CrudRepository<BookEntity, Long> {
+public interface BookRepository extends PagingAndSortingRepository<BookEntity, Long> {
     List<BookEntity> findAll();
+    List<BookEntity> findAllByName(String name);
 
     @Query(value = "SELECT\n" +
             "\tb.book_id AS bookId,\n" +

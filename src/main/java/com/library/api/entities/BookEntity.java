@@ -1,5 +1,6 @@
 package com.library.api.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -53,6 +54,7 @@ public class BookEntity implements Serializable {
     @Column(name = "book_description", columnDefinition = "text")
     private String description;
 
+    @NotNull
     @Column(name = "book_edition")
     private String edition;
 
@@ -73,6 +75,7 @@ public class BookEntity implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "author_id"))
     private Set<AuthorEntity> authors;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "book", cascade = CascadeType.ALL)
     private List<BookLoanEntity> bookLoans;
 }

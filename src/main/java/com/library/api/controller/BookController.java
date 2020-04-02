@@ -7,6 +7,7 @@ import com.library.api.models.ApiResponse;
 import com.library.api.models.book.BookLoanRequest;
 import com.library.api.models.book.BookPageResponse;
 import com.library.api.models.book.BookReturnRequest;
+import com.library.api.models.book.BookUpdateRequest;
 import com.library.api.services.BookServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -35,13 +36,8 @@ public class BookController {
         return new ResponseEntity<>(bookService.getBook(id), OK);
     }
 
-    @GetMapping("/books")
-    public ResponseEntity<List<BookEntity>> getAllBooks() {
-        return new ResponseEntity<>(bookService.getAllBooks(), OK);
-    }
-
     @GetMapping("/books-paged")
-    public ResponseEntity<Iterable<BookPageResponse>> getAllBooksPaged(@RequestParam("page") int page, @RequestParam("size") int size) {
+    public ResponseEntity<Iterable> getAllBooksPaged(@RequestParam("page") int page, @RequestParam("size") int size) {
         Page<BookPageResponse> resultPage = bookService.findPaginated(page, size);
         if (page > resultPage.getTotalPages()) {
             throw new ResourceNotFoundException("Page size exceeds total pages.");
@@ -53,14 +49,13 @@ public class BookController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/book")
     public ResponseEntity<BookEntity> addBook(@RequestBody @Valid BookEntity bookEntity) {
-        bookEntity = bookService.addBook(bookEntity);
-        return new ResponseEntity<>(bookEntity, CREATED);
+        return new ResponseEntity<>(bookService.addBook(bookEntity), CREATED);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/book/{id}")
-    public ResponseEntity updateBook(@PathVariable Long id, @RequestBody @Valid BookEntity bookEntity) {
-        bookService.updateBook(id, bookEntity);
+    public ResponseEntity updateBook(@PathVariable Long id, @RequestBody @Valid BookUpdateRequest bookUpdateRequest) {
+        bookService.updateBook(id, bookUpdateRequest);
         return new ResponseEntity<>(UPDATE_SUCCESS, OK);
     }
 
@@ -105,5 +100,15 @@ public class BookController {
         }
 
         return new ResponseEntity<>(apiResponse, OK);
+    }
+
+    @GetMapping("/books")
+    public ResponseEntity<List<BookEntity>> getAllBooks() {
+        return new ResponseEntity<>(bookService.getAllBooks(), OK);
+    }
+
+    @GetMapping("/books/{name}")
+    public ResponseEntity getAllBooksByBookName(@PathVariable String name) {
+        return new ResponseEntity<>(bookService.getAllBooksByName(name), OK);
     }
 }

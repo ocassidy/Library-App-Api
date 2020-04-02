@@ -4,10 +4,7 @@ import com.library.api.entities.*;
 import com.library.api.exceptions.ResourceNotFoundException;
 import com.library.api.mappers.BookPageMapper;
 import com.library.api.models.ApiResponse;
-import com.library.api.models.book.BookLoanId;
-import com.library.api.models.book.BookLoanRequest;
-import com.library.api.models.book.BookPageResponse;
-import com.library.api.models.book.BookReturnRequest;
+import com.library.api.models.book.*;
 import com.library.api.repositories.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +21,6 @@ public class BookServiceImpl implements BookService {
     private UserLoanRepository userLoanRepository;
     private BookLoanRepository bookLoanRepository;
     private UserService userService;
-    private BookPageRepository bookPageRepository;
     private BookPageMapper bookPageMapper;
 
     public BookServiceImpl(BookRepository bookRepository,
@@ -32,14 +28,12 @@ public class BookServiceImpl implements BookService {
                            UserLoanRepository userLoanRepository,
                            BookLoanRepository bookLoanRepository,
                            UserService userService,
-                           BookPageRepository bookPageRepository,
                            BookPageMapper bookPageMapper) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.userLoanRepository = userLoanRepository;
         this.bookLoanRepository = bookLoanRepository;
         this.userService = userService;
-        this.bookPageRepository = bookPageRepository;
         this.bookPageMapper = bookPageMapper;
     }
 
@@ -57,9 +51,17 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findAll();
     }
 
+    public List<BookEntity> getAllBooksByName(String name) {
+        if (bookRepository.findAllByName(name).isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return bookRepository.findAllByName(name);
+    }
+
     public Page<BookPageResponse> findPaginated(int page, int size) {
         PageRequest pageReq = PageRequest.of(page, size);
-        Page<BookEntity> resultPage = bookPageRepository.findAll(pageReq);
+        Page<BookEntity> resultPage = bookRepository.findAll(pageReq);
         return bookPageMapper.mapEntitiesToBookPage(resultPage);
     }
 
@@ -67,11 +69,26 @@ public class BookServiceImpl implements BookService {
         return bookRepository.save(bookEntity);
     }
 
-    public void updateBook(Long id, BookEntity bookEntity) {
+    public void updateBook(Long id, BookUpdateRequest bookUpdateRequest) {
+        BookEntity bookEntity = getBook(id);
+        bookEntity.setName(bookUpdateRequest.getName());
+        bookEntity.setImage(bookUpdateRequest.getImage());
+        bookEntity.setCopies(bookUpdateRequest.getCopies());
+        bookEntity.setCopiesAvailable(bookUpdateRequest.getCopiesAvailable());
+        bookEntity.setAuthors(bookUpdateRequest.getAuthors());
+        bookEntity.setIsbn10(bookUpdateRequest.getIsbn10());
+        bookEntity.setIsbn13(bookUpdateRequest.getIsbn13());
+        bookEntity.setDescription(bookUpdateRequest.getDescription());
+        bookEntity.setEdition(bookUpdateRequest.getEdition());
+        bookEntity.setPublisher(bookUpdateRequest.getPublisher());
+        bookEntity.setGenre(bookUpdateRequest.getGenre());
+        bookEntity.setYearPublished(bookUpdateRequest.getYearPublished());
+
         bookRepository.save(bookEntity);
     }
 
     public void deleteBook(Long id) {
+        BookEntity bookEntity = getBook(id);
         bookRepository.deleteById(id);
     }
 
@@ -147,7 +164,7 @@ public class BookServiceImpl implements BookService {
         if (userLoanRepository.findById(bookReturnRequest.getLoanId()).isPresent()) {
             UserLoanEntity userLoanEntity = optionalUserLoanEntity.get();
             userLoanEntity.setId(bookReturnRequest.getLoanId());
-            userLoanEntity.setActive(true);
+            userLoanEntity.setActive(false);
             userLoanEntity.setUserEntity(userEntity);
             userLoanEntity.setDateReturned(calendar);
 

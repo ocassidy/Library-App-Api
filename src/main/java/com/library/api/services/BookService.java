@@ -6,6 +6,7 @@ import com.library.api.models.ApiResponse;
 import com.library.api.models.book.BookLoanRequest;
 import com.library.api.models.book.BookPageResponse;
 import com.library.api.models.book.BookReturnRequest;
+import com.library.api.models.book.BookUpdateRequest;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public interface BookService {
 
     BookEntity addBook(BookEntity bookEntity);
 
-    void updateBook(Long id, BookEntity bookEntity);
+    void updateBook(Long id, BookUpdateRequest bookUpdateRequest);
 
     void deleteBook(Long id);
 
