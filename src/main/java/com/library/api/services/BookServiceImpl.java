@@ -17,20 +17,17 @@ import java.util.*;
 @Service
 public class BookServiceImpl implements BookService {
     private BookRepository bookRepository;
-    private AuthorRepository authorRepository;
     private UserLoanRepository userLoanRepository;
     private BookLoanRepository bookLoanRepository;
     private UserService userService;
     private BookPageMapper bookPageMapper;
 
     public BookServiceImpl(BookRepository bookRepository,
-                           AuthorRepository authorRepository,
                            UserLoanRepository userLoanRepository,
                            BookLoanRepository bookLoanRepository,
                            UserService userService,
                            BookPageMapper bookPageMapper) {
         this.bookRepository = bookRepository;
-        this.authorRepository = authorRepository;
         this.userLoanRepository = userLoanRepository;
         this.bookLoanRepository = bookLoanRepository;
         this.userService = userService;
@@ -65,7 +62,22 @@ public class BookServiceImpl implements BookService {
         return bookPageMapper.mapEntitiesToBookPage(resultPage);
     }
 
-    public BookEntity addBook(BookEntity bookEntity) {
+    public BookEntity addBook(BookModel bookModel) {
+        BookEntity bookEntity = BookEntity.builder()
+                .name(bookModel.getName())
+                .subtitle(bookModel.getSubtitle())
+                .copies(bookModel.getCopies())
+                .copiesAvailable(bookModel.getCopiesAvailable())
+                .isbn10(bookModel.getIsbn10())
+                .isbn13(bookModel.getIsbn13())
+                .author(bookModel.getAuthor())
+                .genre(bookModel.getGenre())
+                .edition(bookModel.getEdition())
+                .publisher(bookModel.getPublisher())
+                .description(bookModel.getDescription())
+                .image(bookModel.getImage())
+                .yearPublished(bookModel.getYearPublished())
+                .build();
         return bookRepository.save(bookEntity);
     }
 
@@ -75,7 +87,7 @@ public class BookServiceImpl implements BookService {
         bookEntity.setImage(bookUpdateRequest.getImage());
         bookEntity.setCopies(bookUpdateRequest.getCopies());
         bookEntity.setCopiesAvailable(bookUpdateRequest.getCopiesAvailable());
-        bookEntity.setAuthors(bookUpdateRequest.getAuthors());
+        bookEntity.setAuthor(bookUpdateRequest.getAuthor());
         bookEntity.setIsbn10(bookUpdateRequest.getIsbn10());
         bookEntity.setIsbn13(bookUpdateRequest.getIsbn13());
         bookEntity.setDescription(bookUpdateRequest.getDescription());
@@ -90,14 +102,6 @@ public class BookServiceImpl implements BookService {
     public void deleteBook(Long id) {
         BookEntity bookEntity = getBook(id);
         bookRepository.deleteById(id);
-    }
-
-    public AuthorEntity addBookAuthor(AuthorEntity authorEntity) {
-        return authorRepository.save(authorEntity);
-    }
-
-    public Optional<AuthorEntity> getAuthor(Long id) {
-        return authorRepository.findById(id);
     }
 
     public ApiResponse loanBook(BookLoanRequest bookLoanRequest) {

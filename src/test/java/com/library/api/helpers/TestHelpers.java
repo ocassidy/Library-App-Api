@@ -2,9 +2,8 @@ package com.library.api.helpers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.library.api.entities.AuthorEntity;
-import com.library.api.entities.BookEntity;
 import com.library.api.models.ApiResponse;
+import com.library.api.models.book.BookModel;
 import com.library.api.models.user.UserLoginRequest;
 import com.library.api.models.user.UserRegisterRequest;
 import com.library.api.services.AuthenticationServiceImpl;
@@ -61,16 +60,17 @@ public class TestHelpers {
         return headers;
     }
 
-    public BookEntity generateBook(int copies,
-                                   int copiesAvailable,
-                                   String edition,
-                                   String name,
-                                   String publisher,
-                                   String genre,
-                                   String yearPublished,
-                                   String isbn10,
-                                   String isbn13) {
-        return BookEntity.builder()
+    public BookModel generateBookModel(int copies,
+                                       int copiesAvailable,
+                                       String edition,
+                                       String name,
+                                       String publisher,
+                                       String genre,
+                                       String yearPublished,
+                                       String isbn10,
+                                       String isbn13,
+                                       String author) {
+        return BookModel.builder()
                 .copies(copies)
                 .copiesAvailable(copiesAvailable)
                 .edition(edition)
@@ -80,10 +80,7 @@ public class TestHelpers {
                 .yearPublished(yearPublished)
                 .isbn10(isbn10)
                 .isbn13(isbn13)
+                .author(author)
                 .build();
-    }
-
-    public AuthorEntity generateAuthor(String name) {
-        return AuthorEntity.builder().name(name).build();
     }
 }

@@ -1,11 +1,8 @@
 package com.library.api.models.book;
 
-import com.library.api.entities.AuthorEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -24,5 +21,5 @@ public class BookUpdateRequest {
     private String genre;
     private String yearPublished;
     private String image;
-    private Set<AuthorEntity> authors;
+    private String author;
 }

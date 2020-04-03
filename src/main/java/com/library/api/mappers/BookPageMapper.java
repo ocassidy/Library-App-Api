@@ -1,15 +1,9 @@
 package com.library.api.mappers;
 
-import com.library.api.entities.AuthorEntity;
 import com.library.api.entities.BookEntity;
-import com.library.api.models.AuthorModel;
 import com.library.api.models.book.BookPageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class BookPageMapper {
@@ -28,18 +22,10 @@ public class BookPageMapper {
                 .image(bookEntity.getImage())
                 .publisher(bookEntity.getPublisher())
                 .yearPublished(bookEntity.getYearPublished())
-                .authors(mapAuthorEntitiesToModel(bookEntity.getAuthors()))
+                .author(bookEntity.getAuthor())
                 .build();
     }
     public Page<BookPageResponse> mapEntitiesToBookPage(Page<BookEntity> bookEntities) {
         return bookEntities.map(this::mapEntityToBookPage);
-    }
-
-    public AuthorModel mapAuthorEntityToModel(AuthorEntity authorEntity) {
-        return AuthorModel.builder().id(authorEntity.getId()).name(authorEntity.getName()).build();
-    }
-
-    public List<AuthorModel> mapAuthorEntitiesToModel(Set<AuthorEntity> authorEntities) {
-        return authorEntities.stream().map(this::mapAuthorEntityToModel).collect(Collectors.toList());
     }
 }

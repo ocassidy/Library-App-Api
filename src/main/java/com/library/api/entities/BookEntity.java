@@ -1,6 +1,6 @@
 package com.library.api.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -8,7 +8,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -69,13 +68,10 @@ public class BookEntity implements Serializable {
     @Column(name = "book_image")
     private String image;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "books_authors",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "author_id"))
-    private Set<AuthorEntity> authors;
+    @Column(name = "book_author")
+    private String author;
 
-    @JsonIgnore
+    @JsonManagedReference("bookLoanEntity")
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "book", cascade = CascadeType.ALL)
     private List<BookLoanEntity> bookLoans;
 }

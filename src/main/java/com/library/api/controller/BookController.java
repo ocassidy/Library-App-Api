@@ -1,13 +1,9 @@
 package com.library.api.controller;
 
-import com.library.api.entities.AuthorEntity;
 import com.library.api.entities.BookEntity;
 import com.library.api.exceptions.ResourceNotFoundException;
 import com.library.api.models.ApiResponse;
-import com.library.api.models.book.BookLoanRequest;
-import com.library.api.models.book.BookPageResponse;
-import com.library.api.models.book.BookReturnRequest;
-import com.library.api.models.book.BookUpdateRequest;
+import com.library.api.models.book.*;
 import com.library.api.services.BookServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -48,8 +44,8 @@ public class BookController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/book")
-    public ResponseEntity<BookEntity> addBook(@RequestBody @Valid BookEntity bookEntity) {
-        return new ResponseEntity<>(bookService.addBook(bookEntity), CREATED);
+    public ResponseEntity<BookEntity> addBook(@RequestBody @Valid BookModel bookModel) {
+        return new ResponseEntity<>(bookService.addBook(bookModel), CREATED);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -64,18 +60,6 @@ public class BookController {
     public ResponseEntity deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
         return new ResponseEntity<>(DELETE_SUCCESS, OK);
-    }
-
-    @GetMapping("/book/author/{id}")
-    public ResponseEntity getBookAuthor(@PathVariable Long id) {
-        return new ResponseEntity<>(bookService.getAuthor(id), OK);
-    }
-
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/book/author")
-    public ResponseEntity<AuthorEntity> addBookAuthor(@RequestBody @Valid AuthorEntity authorEntity) {
-        authorEntity = bookService.addBookAuthor(authorEntity);
-        return new ResponseEntity<>(authorEntity, CREATED);
     }
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
