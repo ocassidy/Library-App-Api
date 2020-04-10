@@ -127,11 +127,13 @@ public class BookServiceImpl implements BookService {
 
         UserLoanEntity userLoanEntity = UserLoanEntity.builder()
                 .userEntity(userEntity)
-                .isActive(true)
+                .active(true)
                 .dateDueBack(calendar)
                 .build();
 
         UserLoanEntity savedUserLoan = userLoanRepository.save(userLoanEntity);
+        userLoanEntity.setFine(false);
+        userLoanEntity.setFineAmount(0);
 
         BookLoanId bookLoanId = new BookLoanId();
 

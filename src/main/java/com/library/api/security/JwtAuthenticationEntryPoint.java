@@ -1,7 +1,6 @@
 package com.library.api.security;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.java.Log;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -13,14 +12,13 @@ import java.io.IOException;
 import java.io.Serializable;
 
 @Component
+@Log
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Serializable {
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationEntryPoint.class);
-
     @Override
     public void commence(HttpServletRequest httpServletRequest,
                          HttpServletResponse httpServletResponse,
                          AuthenticationException e) throws IOException, ServletException {
-        logger.error("Responding with unauthorized error. Message - {}", e.getMessage());
+        log.severe("Responding with unauthorized error. Message - {" + e.getMessage() + "}");
         httpServletResponse.setContentType("application/json;charset=UTF-8");
         httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
     }

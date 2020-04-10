@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface UserLoanRepository extends CrudRepository<UserLoanEntity, Long> {
     Optional<UserLoanEntity> findById(Long id);
+    Long countAllByFineIsTrue();
 }

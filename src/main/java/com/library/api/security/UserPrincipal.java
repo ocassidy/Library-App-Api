@@ -24,7 +24,6 @@ public class UserPrincipal implements UserDetails {
 
     private String username;
 
-    @JsonIgnore
     private String email;
 
     @JsonIgnore
@@ -33,50 +32,48 @@ public class UserPrincipal implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
 
     public static UserPrincipal create(UserEntity user) {
-        List<GrantedAuthority> authorities = user.getRoles().stream().map(role ->
-                new SimpleGrantedAuthority(role.getRole().name())
-        ).collect(Collectors.toList());
+        List<GrantedAuthority> authorities = user.getRoles()
+                .stream().map(role -> new SimpleGrantedAuthority(role.getRole().name())
+                ).collect(Collectors.toList());
 
         return new UserPrincipal(
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
-                user.getUsername(),
+                user.getUsername().toLowerCase(),
                 user.getEmail(),
                 user.getPassword(),
                 authorities
         );
     }
 
-    @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
-    @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
-    @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    @Override
     public boolean isEnabled() {
         return true;
     }
 
-    @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UserPrincipal that = (UserPrincipal) o;
         return Objects.equals(id, that.id);
     }
 
-    @Override
     public int hashCode() {
         return Objects.hash(id);
     }

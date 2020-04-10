@@ -34,7 +34,10 @@ public class UserLoanEntity implements Serializable {
     private UserEntity userEntity;
 
     @Column(name = "fine")
-    private Integer fine;
+    private boolean fine;
+
+    @Column(name = "fine_amount")
+    private Integer fineAmount;
 
     @Column(name = "cost_per_day")
     private Integer costPerDay;
@@ -53,6 +56,6 @@ public class UserLoanEntity implements Serializable {
     private Calendar dateReturned;
 
     @NotNull
-    @Column(name = "is_active")
-    private boolean isActive;
+    @Column(name = "active")
+    private boolean active;
 }

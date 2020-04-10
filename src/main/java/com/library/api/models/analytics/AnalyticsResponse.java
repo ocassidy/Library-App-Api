@@ -14,6 +14,9 @@ import java.util.List;
 public class AnalyticsResponse {
     Long totalNumOfBooks;
     Long totalNumOfLoans;
+    Long totalNumOfUsers;
+    Long totalNumOfFines;
+    Long totalNumOfBooksMissing;
     List<GetAllLoanDetails> allLoanDetailsList;
     List<GetAllLoanDetails> allActiveLoansDetailsList;
 }

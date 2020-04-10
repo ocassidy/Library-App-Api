@@ -33,7 +33,7 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
             "ul.date_due_back AS dateDueBack,\n" +
             "ul.fine AS fine,\n" +
             "ul.overdue_by AS overdueBy,\n" +
-            "ul.is_active AS active\n" +
+            "ul.active AS active\n" +
             "FROM users as u\n" +
             "LEFT OUTER JOIN user_loans as ul\n" +
             "ON u.user_id = ul.user_id\n" +
@@ -41,7 +41,7 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
             "ON ul.loan_id = bl.loan_id\n" +
             "LEFT OUTER JOIN books as b\n" +
             "ON b.book_id = bl.book_id\n" +
-            "WHERE bl.loan_id IS NOT null AND ul.is_active = true AND u.username = :username\n" +
+            "WHERE bl.loan_id IS NOT null AND ul.active = true AND u.username = :username\n" +
             "GROUP BY b.book_id, bl.book_id, ul.loan_id, bl.loan_id", nativeQuery = true)
     Page<UserLoanDetails> getActiveUserLoanDetails(@Param("username") String username, Pageable pageable);
 
@@ -55,7 +55,7 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
             "ul.date_due_back AS dateDueBack,\n" +
             "ul.fine AS fine,\n" +
             "ul.overdue_by AS overdueBy,\n" +
-            "ul.is_active AS active\n" +
+            "ul.active AS active\n" +
             "FROM users as u\n" +
             "LEFT OUTER JOIN user_loans as ul\n" +
             "ON u.user_id = ul.user_id\n" +
@@ -63,7 +63,7 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
             "ON ul.loan_id = bl.loan_id\n" +
             "LEFT OUTER JOIN books as b\n" +
             "ON b.book_id = bl.book_id\n" +
-            "WHERE bl.loan_id IS NOT null AND ul.is_active = false AND u.username = :username\n" +
+            "WHERE bl.loan_id IS NOT null AND ul.active = false AND u.username = :username\n" +
             "GROUP BY b.book_id, bl.book_id, ul.loan_id, bl.loan_id", nativeQuery = true)
     Page<UserLoanDetails> getInactiveUserLoanDetails(@Param("username") String username, Pageable pageable);
 }

@@ -43,15 +43,17 @@ jobs:
             fi
       - store_artifacts:
           path: build/libs
-  deploy-integration:
-    docker:
-      - image: buildpack-deps:trusty
-    steps:
-      - checkout
-      - run:
-          name: Deploy master to Heroku
-          command: |
-            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_INTEGRATION_APP_NAME.git master
+      - store_test_results:
+          path: test-results
+#  deploy-integration:
+#    docker:
+#      - image: buildpack-deps:trusty
+#    steps:
+#      - checkout
+#      - run:
+#          name: Deploy master to Heroku
+#          command: |
+#            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_INTEGRATION_APP_NAME.git master
   deploy-staging:
     docker:
       - image: buildpack-deps:trusty
@@ -66,13 +68,13 @@ workflows:
   build-deploy:
     jobs:
       - build-test
-      - deploy-integration:
-          requires:
-            - build-test
+#      - deploy-integration:
+#          requires:
+#            - build-test
       - deploy-staging:
           requires:
             - build-test
-            - deploy-integration
+#            - deploy-integration
           filters:
             branches:
               only: master

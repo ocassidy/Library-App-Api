@@ -6,6 +6,7 @@ import com.library.api.models.user.UserLoginRequest;
 import com.library.api.models.user.UserRegisterRequest;
 import com.library.api.services.AuthenticationServiceImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +60,7 @@ public class AuthenticationController {
         return new ResponseEntity<>(apiResponse, CREATED);
     }
 
+    @PostAuthorize("#authentication.principal.username == authentication.principal.username")
     @GetMapping("/user")
     public ResponseEntity<Object> getCurrentUser(Authentication authentication) {
         Object currentUser = authenticationService.getCurrentUser(authentication);

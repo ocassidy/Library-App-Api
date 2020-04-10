@@ -71,6 +71,9 @@ public class BookEntity implements Serializable {
     @Column(name = "book_author")
     private String author;
 
+    @Column(name = "missing")
+    private boolean missing;
+
     @JsonManagedReference("bookLoanEntity")
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "book", cascade = CascadeType.ALL)
     private List<BookLoanEntity> bookLoans;
