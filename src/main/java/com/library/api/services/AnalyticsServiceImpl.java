@@ -1,13 +1,15 @@
 package com.library.api.services;
 
-import com.library.api.models.analytics.AnalyticsResponse;
-import com.library.api.models.analytics.GetAllLoanDetails;
+import com.library.api.models.analytics.*;
 import com.library.api.repositories.BookLoanRepository;
 import com.library.api.repositories.BookRepository;
 import com.library.api.repositories.UserLoanRepository;
 import com.library.api.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -51,12 +53,52 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         return bookRepository.getAllBookLoanDetails();
     }
 
-    public List<GetAllLoanDetails> getAllActiveLoans() {
+    private List<GetAllLoanDetails> getAllActiveLoans() {
         return bookRepository.getAllActiveBookLoans();
     }
 
-    public AnalyticsResponse getAllAnalytics() {
-        return AnalyticsResponse.builder()
+    private List<GetNumOfLoansByAuthor> getNumOfActiveLoansByAuthor() {
+        return bookRepository.getNumOfActiveLoansByAuthor();
+    }
+
+    private List<GetNumOfLoansByGenre> getNumOfActiveLoansByGenre() {
+        return bookRepository.getNumOfActiveLoansByGenre();
+    }
+
+    private List<GetNumOfLoansByAuthor> getNumOfLoansByAuthor() {
+        return bookRepository.getNumOfLoansByAuthor();
+    }
+
+    private List<GetNumOfLoansByGenre> getNumOfLoansByGenre() {
+        return bookRepository.getNumOfLoansByGenre();
+    }
+
+    private List<GetNumOfLoansByEdition> getNumOfActiveLoansByEdition() {
+        return bookRepository.getNumOfActiveLoansByEdition();
+    }
+
+    private List<GetNumOfLoansByEdition> getNumOfLoansByEdition() {
+        return bookRepository.getNumOfLoansByEdition();
+    }
+
+    private List<GetLoansInDateRange> getLoansInDateRanges(String startDate, String  endDate) throws ParseException {
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
+        Date formattedStartDate = parser.parse(startDate);
+        Date formattedEndDate = parser.parse(endDate);
+
+        return userLoanRepository.getLoansInDateRange(formattedStartDate, formattedEndDate);
+    }
+
+    private List<GetLoansInDateRange> getActiveLoansInDateRanges(String startDate, String  endDate) throws ParseException {
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
+        Date formattedStartDate = parser.parse(startDate);
+        Date formattedEndDate = parser.parse(endDate);
+
+        return userLoanRepository.getActiveLoansInDateRange(formattedStartDate, formattedEndDate);
+    }
+
+    public AllBookAnalyticsResponse getAllAnalytics() {
+        return AllBookAnalyticsResponse.builder()
                 .totalNumOfBooks(getBookCount())
                 .totalNumOfLoans(getBookLoanCount())
                 .totalNumOfUsers(getUserCount())
@@ -64,6 +106,19 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                 .totalNumOfBooksMissing(getBooksMissingCount())
                 .allLoanDetailsList(getAllLoanDetails())
                 .allActiveLoansDetailsList(getAllActiveLoans())
+                .numOfActiveLoansByAuthor(getNumOfActiveLoansByAuthor())
+                .numOfActiveLoansByGenre(getNumOfActiveLoansByGenre())
+                .numOfLoansByAuthor(getNumOfLoansByAuthor())
+                .numOfLoansByGenre(getNumOfLoansByGenre())
+                .numOfActiveLoansByEdition(getNumOfActiveLoansByEdition())
+                .numOfLoansByEdition(getNumOfLoansByEdition())
+                .build();
+    }
+
+    public DateRangeAnalyticsResponse getDateRangeAnalytics(String startDate, String  endDate) throws ParseException {
+        return DateRangeAnalyticsResponse.builder()
+                .getActiveLoansInDateRange(getActiveLoansInDateRanges(startDate, endDate))
+                .getLoansInDateRange(getLoansInDateRanges(startDate, endDate))
                 .build();
     }
 }

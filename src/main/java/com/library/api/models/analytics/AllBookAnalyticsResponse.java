@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AnalyticsResponse {
+public class AllBookAnalyticsResponse {
     Long totalNumOfBooks;
     Long totalNumOfLoans;
     Long totalNumOfUsers;
@@ -19,4 +19,10 @@ public class AnalyticsResponse {
     Long totalNumOfBooksMissing;
     List<GetAllLoanDetails> allLoanDetailsList;
     List<GetAllLoanDetails> allActiveLoansDetailsList;
+    List<GetNumOfLoansByAuthor> numOfActiveLoansByAuthor;
+    List<GetNumOfLoansByGenre> numOfActiveLoansByGenre;
+    List<GetNumOfLoansByAuthor> numOfLoansByAuthor;
+    List<GetNumOfLoansByGenre> numOfLoansByGenre;
+    List<GetNumOfLoansByEdition> numOfActiveLoansByEdition;
+    List<GetNumOfLoansByEdition> numOfLoansByEdition;
 }
