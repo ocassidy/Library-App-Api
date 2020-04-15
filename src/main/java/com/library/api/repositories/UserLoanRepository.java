@@ -23,7 +23,8 @@ public interface UserLoanRepository extends CrudRepository<UserLoanEntity, Long>
             "FROM user_loans as ul\n" +
             "WHERE ul.active = true AND ul.date_withdrawn >= :startDate AND ul.date_withdrawn <= :endDate\n" +
             "GROUP BY cast(ul.date_withdrawn AS date)\n" +
-            "HAVING COUNT(ul.date_withdrawn) > 0", nativeQuery = true)
+            "HAVING COUNT(ul.date_withdrawn) > 0\n" +
+            "ORDER BY cast(ul.date_withdrawn AS date)", nativeQuery = true)
     List<GetLoansInDateRange> getActiveLoansInDateRange(@Param("startDate") @Temporal Date startDate,
                                                         @Param("endDate") @Temporal Date endDate);
 
@@ -32,7 +33,7 @@ public interface UserLoanRepository extends CrudRepository<UserLoanEntity, Long>
             "FROM user_loans as ul\n" +
             "WHERE ul.date_withdrawn >= :startDate AND ul.date_withdrawn <= :endDate\n" +
             "GROUP BY cast(ul.date_withdrawn AS date)\n" +
-            "HAVING COUNT(ul.date_withdrawn) > 0", nativeQuery = true)
+            "ORDER BY cast(ul.date_withdrawn AS date)", nativeQuery = true)
     List<GetLoansInDateRange> getLoansInDateRange(@Param("startDate") @Temporal Date startDate,
                                                         @Param("endDate") @Temporal Date endDate);
 }
