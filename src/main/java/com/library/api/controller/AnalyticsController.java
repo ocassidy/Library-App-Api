@@ -1,7 +1,9 @@
 package com.library.api.controller;
 
-import com.library.api.models.analytics.AllBookAnalyticsResponse;
-import com.library.api.models.analytics.DateRangeAnalyticsResponse;
+import com.library.api.models.analytics.books.AllBookAnalyticsResponse;
+import com.library.api.models.analytics.books.LoansDateRangeAnalyticsResponse;
+import com.library.api.models.analytics.books.ReturnsInDateRangeResponse;
+import com.library.api.models.analytics.users.AllUserAnalyticsResponse;
 import com.library.api.services.AnalyticsServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,14 +24,25 @@ public class AnalyticsController {
         this.analyticsService = analyticsService;
     }
 
-    @GetMapping(path = "/all", produces = "application/json")
-    public ResponseEntity<AllBookAnalyticsResponse> getAllBookLoanDetails() {
-        return new ResponseEntity<>(analyticsService.getAllAnalytics(), OK);
+    @GetMapping(path = "/all-books", produces = "application/json")
+    public ResponseEntity<AllBookAnalyticsResponse> getAllBookLoanAnalyticsDetails() {
+        return new ResponseEntity<>(analyticsService.getAllBookAnalytics(), OK);
     }
 
-    @GetMapping(path = "/date-range", produces = "application/json")
-    public ResponseEntity<DateRangeAnalyticsResponse> getAllInDateRange(@RequestParam String startDate,
-                                                                        @RequestParam String endDate) throws ParseException {
+    @GetMapping(path = "/all-users", produces = "application/json")
+    public ResponseEntity<AllUserAnalyticsResponse> getAllUserLoanAnalyticsDetails(@RequestParam int loanNumber) {
+        return new ResponseEntity<>(analyticsService.getAllUserAnalytics(loanNumber), OK);
+    }
+
+    @GetMapping(path = "/loans-date-range", produces = "application/json")
+    public ResponseEntity<LoansDateRangeAnalyticsResponse> getAllInDateRange(@RequestParam String startDate,
+                                                                             @RequestParam String endDate) throws ParseException {
         return new ResponseEntity<>(analyticsService.getDateRangeAnalytics(startDate, endDate), OK);
+    }
+
+    @GetMapping(path = "/returns-date-range", produces = "application/json")
+    public ResponseEntity<ReturnsInDateRangeResponse> getReturnsInDateRange(@RequestParam String startDate,
+                                                                            @RequestParam String endDate) throws ParseException {
+        return new ResponseEntity<>(analyticsService.getReturnsRangeAnalytics(startDate, endDate), OK);
     }
 }

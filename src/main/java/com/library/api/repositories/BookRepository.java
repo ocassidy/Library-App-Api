@@ -1,10 +1,10 @@
 package com.library.api.repositories;
 
 import com.library.api.entities.BookEntity;
-import com.library.api.models.analytics.GetAllLoanDetails;
-import com.library.api.models.analytics.GetNumOfLoansByAuthor;
-import com.library.api.models.analytics.GetNumOfLoansByEdition;
-import com.library.api.models.analytics.GetNumOfLoansByGenre;
+import com.library.api.models.analytics.books.GetAllLoanDetails;
+import com.library.api.models.analytics.books.GetNumOfLoansByAuthor;
+import com.library.api.models.analytics.books.GetNumOfLoansByEdition;
+import com.library.api.models.analytics.books.GetNumOfLoansByGenre;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;

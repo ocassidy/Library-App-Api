@@ -1,4 +1,4 @@
-package com.library.api.models.analytics;
+package com.library.api.models.analytics.books;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

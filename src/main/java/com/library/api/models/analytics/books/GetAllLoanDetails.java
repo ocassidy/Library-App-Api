@@ -1,4 +1,4 @@
-package com.library.api.models.analytics;
+package com.library.api.models.analytics.books;
 
 public interface GetAllLoanDetails {
     Long getBookId();

@@ -1,4 +1,4 @@
-package com.library.api.models.analytics;
+package com.library.api.models.analytics.users;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DateRangeAnalyticsResponse {
-    List<GetLoansInDateRange> getLoansInDateRange;
-    List<GetLoansInDateRange> getActiveLoansInDateRange;
+public class AllUserAnalyticsResponse {
+    List<GetNumOfUserLoans> getNumOfUserLoans;
+    List<GetNumOfUserLoans> getNumOfActiveUserLoans;
 }

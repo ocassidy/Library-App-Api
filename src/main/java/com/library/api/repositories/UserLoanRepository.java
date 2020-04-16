@@ -1,7 +1,8 @@
 package com.library.api.repositories;
 
 import com.library.api.entities.UserLoanEntity;
-import com.library.api.models.analytics.GetLoansInDateRange;
+import com.library.api.models.analytics.books.GetLoansInDateRange;
+import com.library.api.models.analytics.books.GetReturnsInDateRange;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.Temporal;
 import org.springframework.data.repository.CrudRepository;
@@ -35,5 +36,15 @@ public interface UserLoanRepository extends CrudRepository<UserLoanEntity, Long>
             "GROUP BY cast(ul.date_withdrawn AS date)\n" +
             "ORDER BY cast(ul.date_withdrawn AS date)", nativeQuery = true)
     List<GetLoansInDateRange> getLoansInDateRange(@Param("startDate") @Temporal Date startDate,
-                                                        @Param("endDate") @Temporal Date endDate);
+                                                  @Param("endDate") @Temporal Date endDate);
+
+    @Query(value = "SELECT cast(ul.date_returned AS date) AS dateReturned,\n" +
+            "COUNT (ul.date_returned) AS numberReturned\n" +
+            "FROM user_loans as ul\n" +
+            "WHERE ul.date_returned >= :startDate AND ul.date_returned <= :endDate\n" +
+            "GROUP BY cast(ul.date_returned AS date)\n" +
+            "HAVING COUNT(ul.date_returned) > 0\n" +
+            "ORDER BY cast(ul.date_returned AS date)", nativeQuery = true)
+    List<GetReturnsInDateRange> getReturnsInDateRange(@Param("startDate") @Temporal Date startDate,
+                                                      @Param("endDate") @Temporal Date endDate);
 }

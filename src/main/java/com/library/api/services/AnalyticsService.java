@@ -1,10 +1,9 @@
 package com.library.api.services;
 
-import com.library.api.models.analytics.GetAllLoanDetails;
-
-import java.util.List;
+import com.library.api.models.analytics.books.AllBookAnalyticsResponse;
+import com.library.api.models.analytics.users.AllUserAnalyticsResponse;
 
 public interface AnalyticsService {
-    Long getBookLoanCount();
-    List<GetAllLoanDetails> getAllLoanDetails();
+    AllBookAnalyticsResponse getAllBookAnalytics();
+    AllUserAnalyticsResponse getAllUserAnalytics(int loanNumber);
 }

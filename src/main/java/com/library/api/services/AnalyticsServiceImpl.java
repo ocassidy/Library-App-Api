@@ -1,6 +1,7 @@
 package com.library.api.services;
 
-import com.library.api.models.analytics.*;
+import com.library.api.models.analytics.books.*;
+import com.library.api.models.analytics.users.AllUserAnalyticsResponse;
 import com.library.api.repositories.BookLoanRepository;
 import com.library.api.repositories.BookRepository;
 import com.library.api.repositories.UserLoanRepository;
@@ -28,59 +29,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         this.userRepository = userRepository;
         this.userLoanRepository = userLoanRepository;
     }
-
-    public Long getBookCount() {
-        return bookRepository.count();
-    }
-
-    public Long getBooksMissingCount() {
-        return bookRepository.countAllByMissingIsTrue();
-    }
-
-    public Long getBooksFineCount() {
-        return userLoanRepository.countAllByFineIsTrue();
-    }
-
-    public Long getBookLoanCount() {
-        return bookLoanRepository.count();
-    }
-
-    public Long getUserCount() {
-        return userRepository.count();
-    }
-
-    public List<GetAllLoanDetails> getAllLoanDetails() {
-        return bookRepository.getAllBookLoanDetails();
-    }
-
-    private List<GetAllLoanDetails> getAllActiveLoans() {
-        return bookRepository.getAllActiveBookLoans();
-    }
-
-    private List<GetNumOfLoansByAuthor> getNumOfActiveLoansByAuthor() {
-        return bookRepository.getNumOfActiveLoansByAuthor();
-    }
-
-    private List<GetNumOfLoansByGenre> getNumOfActiveLoansByGenre() {
-        return bookRepository.getNumOfActiveLoansByGenre();
-    }
-
-    private List<GetNumOfLoansByAuthor> getNumOfLoansByAuthor() {
-        return bookRepository.getNumOfLoansByAuthor();
-    }
-
-    private List<GetNumOfLoansByGenre> getNumOfLoansByGenre() {
-        return bookRepository.getNumOfLoansByGenre();
-    }
-
-    private List<GetNumOfLoansByEdition> getNumOfActiveLoansByEdition() {
-        return bookRepository.getNumOfActiveLoansByEdition();
-    }
-
-    private List<GetNumOfLoansByEdition> getNumOfLoansByEdition() {
-        return bookRepository.getNumOfLoansByEdition();
-    }
-
     private List<GetLoansInDateRange> getLoansInDateRanges(String startDate, String  endDate) throws ParseException {
         SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
         Date formattedStartDate = parser.parse(startDate);
@@ -97,28 +45,49 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         return userLoanRepository.getActiveLoansInDateRange(formattedStartDate, formattedEndDate);
     }
 
-    public AllBookAnalyticsResponse getAllAnalytics() {
+    public AllBookAnalyticsResponse getAllBookAnalytics() {
         return AllBookAnalyticsResponse.builder()
-                .totalNumOfBooks(getBookCount())
-                .totalNumOfLoans(getBookLoanCount())
-                .totalNumOfUsers(getUserCount())
-                .totalNumOfFines(getBooksFineCount())
-                .totalNumOfBooksMissing(getBooksMissingCount())
-                .allLoanDetailsList(getAllLoanDetails())
-                .allActiveLoansDetailsList(getAllActiveLoans())
-                .numOfActiveLoansByAuthor(getNumOfActiveLoansByAuthor())
-                .numOfActiveLoansByGenre(getNumOfActiveLoansByGenre())
-                .numOfLoansByAuthor(getNumOfLoansByAuthor())
-                .numOfLoansByGenre(getNumOfLoansByGenre())
-                .numOfActiveLoansByEdition(getNumOfActiveLoansByEdition())
-                .numOfLoansByEdition(getNumOfLoansByEdition())
+                .totalNumOfBooks(bookRepository.count())
+                .totalNumOfLoans(bookLoanRepository.count())
+                .totalNumOfUsers(userRepository.count())
+                .totalNumOfFines(userLoanRepository.countAllByFineIsTrue())
+                .totalNumOfBooksMissing(bookRepository.countAllByMissingIsTrue())
+                .allLoanDetailsList(bookRepository.getAllBookLoanDetails())
+                .allActiveLoansDetailsList(bookRepository.getAllActiveBookLoans())
+                .numOfActiveLoansByAuthor(bookRepository.getNumOfActiveLoansByAuthor())
+                .numOfActiveLoansByGenre(bookRepository.getNumOfActiveLoansByGenre())
+                .numOfLoansByAuthor(bookRepository.getNumOfLoansByAuthor())
+                .numOfLoansByGenre(bookRepository.getNumOfLoansByGenre())
+                .numOfActiveLoansByEdition(bookRepository.getNumOfActiveLoansByEdition())
+                .numOfLoansByEdition(bookRepository.getNumOfLoansByEdition())
                 .build();
     }
 
-    public DateRangeAnalyticsResponse getDateRangeAnalytics(String startDate, String  endDate) throws ParseException {
-        return DateRangeAnalyticsResponse.builder()
+    public LoansDateRangeAnalyticsResponse getDateRangeAnalytics(String startDate, String  endDate) throws ParseException {
+        return LoansDateRangeAnalyticsResponse.builder()
                 .getActiveLoansInDateRange(getActiveLoansInDateRanges(startDate, endDate))
                 .getLoansInDateRange(getLoansInDateRanges(startDate, endDate))
+                .build();
+    }
+
+    public ReturnsInDateRangeResponse getReturnsRangeAnalytics(String startDate, String  endDate) throws ParseException {
+        return ReturnsInDateRangeResponse.builder()
+                .returnsInDateRange(getReturnsInDateRange(startDate, endDate))
+                .build();
+    }
+
+    private List<GetReturnsInDateRange> getReturnsInDateRange(String startDate, String  endDate) throws ParseException {
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
+        Date formattedStartDate = parser.parse(startDate);
+        Date formattedEndDate = parser.parse(endDate);
+
+        return userLoanRepository.getReturnsInDateRange(formattedStartDate, formattedEndDate);
+    }
+
+    public AllUserAnalyticsResponse getAllUserAnalytics(int loanNumber) {
+        return AllUserAnalyticsResponse.builder()
+                .getNumOfActiveUserLoans(userRepository.getNumberOfActiveUserLoans(loanNumber))
+                .getNumOfUserLoans(userRepository.getNumberOfUserLoans(loanNumber))
                 .build();
     }
 }
