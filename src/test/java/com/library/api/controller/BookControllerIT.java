@@ -149,7 +149,7 @@ public class BookControllerIT {
                 .build();
 
         JsonNode node = new ObjectMapper().readValue(response.getBody(), JsonNode.class);
-        Long bookId = node.get("id").asLong();
+        long bookId = node.get("id").asLong();
         HttpEntity<BookEntity> updatedBookRequest = new HttpEntity<>(updatedBookEntity, headers);
         ResponseEntity<String> updatedBookResponse = restTemplate.exchange("/api/book/" + bookId, PUT, updatedBookRequest, String.class);
         assertEquals(OK, updatedBookResponse.getStatusCode());
@@ -177,10 +177,15 @@ public class BookControllerIT {
                 .lastName("Test")
                 .password("testpass")
                 .username("WithdrawUser")
+                .address1("123 Road")
+                .address2("Flat 1")
+                .city("City 1")
+                .contactNumber("123456789")
+                .gender("M")
                 .build();
 
         HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest);
-        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
+        ResponseEntity<String> registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
         assertEquals(CREATED, registerResponse.getStatusCode());
 
         String bearerToken = testHelpers.loginUserRetrieveToken("WithdrawUser", "testpass");
@@ -229,10 +234,15 @@ public class BookControllerIT {
                 .lastName("Test")
                 .password("testpass")
                 .username("WithdrawUser")
+                .address1("123 Road")
+                .address2("Flat 1")
+                .city("City 1")
+                .contactNumber("123456789")
+                .gender("M")
                 .build();
 
         HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest);
-        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
+        ResponseEntity<String> registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
         assertEquals(CREATED, registerResponse.getStatusCode());
 
         String bearerToken = testHelpers.loginUserRetrieveToken("WithdrawUser", "testpass");
@@ -281,10 +291,15 @@ public class BookControllerIT {
                 .lastName("Test")
                 .password("testpass")
                 .username("WithdrawUser1")
+                .address1("123 Road")
+                .address2("Flat 1")
+                .city("City 1")
+                .contactNumber("123456789")
+                .gender("M")
                 .build();
 
         HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest);
-        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
+        ResponseEntity<String> registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
         assertEquals(CREATED, registerResponse.getStatusCode());
 
         String bearerToken = testHelpers.loginUserRetrieveToken("WithdrawUser1", "testpass");
@@ -320,10 +335,15 @@ public class BookControllerIT {
                 .lastName("Test")
                 .password("testpass")
                 .username("WithdrawUser2")
+                .address1("123 Road")
+                .address2("Flat 1")
+                .city("City 1")
+                .contactNumber("123456789")
+                .gender("M")
                 .build();
 
         HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest);
-        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
+        ResponseEntity<String> registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
         assertEquals(CREATED, registerResponse.getStatusCode());
 
         String bearerToken = testHelpers.loginUserRetrieveToken("WithdrawUser2", "testpass");
@@ -358,10 +378,15 @@ public class BookControllerIT {
                 .lastName("Test")
                 .password("testpass")
                 .username("WithdrawUser5")
+                .address1("123 Road")
+                .address2("Flat 1")
+                .city("City 1")
+                .contactNumber("123456789")
+                .gender("M")
                 .build();
 
         HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest);
-        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
+        ResponseEntity<String> registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
         assertEquals(CREATED, registerResponse.getStatusCode());
 
         String bearerToken = testHelpers.loginUserRetrieveToken("WithdrawUser5", "testpass");

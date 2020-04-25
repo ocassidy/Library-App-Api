@@ -1,40 +1,42 @@
 package com.library.api.services;
 
 import com.library.api.entities.UserEntity;
+import com.library.api.mappers.UserMapper;
 import com.library.api.models.ApiResponse;
-import com.library.api.models.user.UserDetailsModel;
+import com.library.api.models.user.UserModel;
 import com.library.api.models.user.UserLoanDetails;
 import com.library.api.repositories.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private final SessionRegistry sessionRegistry;
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public UserServiceImpl(SessionRegistry sessionRegistry, UserRepository userRepository) {
-        this.sessionRegistry = sessionRegistry;
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
-    public List<String> getAllUsers() {
-        List<Object> principals = sessionRegistry.getAllPrincipals();
+    public UserModel getUser(String username) {
+        Optional<UserEntity> userEntity = userRepository.findByUsername(username);
+        return userMapper.mapEntityToModel(userEntity.get());
+    }
 
-        List<String> usersNamesList = new ArrayList<>();
+    public List<UserEntity> getAllUsers() {
+        return userRepository.findAll();
+    }
 
-        for (Object principal : principals) {
-            if (principal instanceof UserDetailsModel) {
-                usersNamesList.add(((UserDetailsModel) principal).getUsername());
-            }
-        }
-        return usersNamesList;
+    public Page<UserModel> findPaginated(int page, int size) {
+        PageRequest pageReq = PageRequest.of(page, size);
+        Page<UserEntity> resultPage = userRepository.findAll(pageReq);
+        return userMapper.mapEntitiesToModels(resultPage);
     }
 
     public UserEntity getUserByUsername(String username) {
@@ -51,7 +53,14 @@ public class UserServiceImpl implements UserService {
                 );
     }
 
-    public ApiResponse updateUser(UserEntity userEntity) {
+    public ApiResponse updateUser(UserModel userModel) {
+        UserEntity userEntity = getUserByUsername(userModel.getUsername());
+        userEntity.setAddress1(userModel.getAddress1());
+        userEntity.setAddress2(userModel.getAddress2());
+        userEntity.setCity(userModel.getCity());
+        userEntity.setContactNumber(userModel.getContactNumber());
+        userEntity.setGender(userModel.getGender());
+
         userRepository.save(userEntity);
         return new ApiResponse(true, "User updated successfully");
     }

@@ -27,11 +27,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final static String USERNAME_TAKEN = "Username is already taken!";
     private final static String EMAIL_TAKEN = "Email Address already in use!";
 
-    private AuthenticationManager authenticationManager;
-    private JwtTokenProvider tokenProvider;
-    private UserRepository userRepository;
-    private RoleRepository roleRepository;
-    private PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider tokenProvider;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public AuthenticationServiceImpl(AuthenticationManager authenticationManager,
                                      JwtTokenProvider tokenProvider,
@@ -73,8 +73,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return new ApiResponse(false, EMAIL_TAKEN);
         }
 
-        UserEntity user = new UserEntity(userRegisterRequest.getFirstName(), userRegisterRequest.getLastName(),
-                userRegisterRequest.getUsername(), userRegisterRequest.getEmail(), userRegisterRequest.getPassword());
+        UserEntity user = UserEntity.builder()
+                .address1(userRegisterRequest.getAddress1())
+                .address2(userRegisterRequest.getAddress2())
+                .city(userRegisterRequest.getCity())
+                .contactNumber(userRegisterRequest.getContactNumber())
+                .email(userRegisterRequest.getEmail())
+                .gender(userRegisterRequest.getGender())
+                .lastName(userRegisterRequest.getLastName())
+                .firstName(userRegisterRequest.getFirstName())
+                .username(userRegisterRequest.getUsername())
+                .password(userRegisterRequest.getPassword())
+                .registrationDate(userRegisterRequest.getRegistrationDate())
+                .build();
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -97,8 +108,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return new ApiResponse(false, EMAIL_TAKEN);
         }
 
-        UserEntity user = new UserEntity(userRegisterRequest.getFirstName(), userRegisterRequest.getLastName(),
-                userRegisterRequest.getUsername(), userRegisterRequest.getEmail(), userRegisterRequest.getPassword());
+        UserEntity user = UserEntity.builder()
+                .address1(userRegisterRequest.getAddress1())
+                .address2(userRegisterRequest.getAddress2())
+                .city(userRegisterRequest.getCity())
+                .contactNumber(userRegisterRequest.getContactNumber())
+                .email(userRegisterRequest.getEmail())
+                .gender(userRegisterRequest.getGender())
+                .lastName(userRegisterRequest.getLastName())
+                .firstName(userRegisterRequest.getFirstName())
+                .username(userRegisterRequest.getUsername())
+                .password(userRegisterRequest.getPassword())
+                .registrationDate(userRegisterRequest.getRegistrationDate())
+                .build();
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 

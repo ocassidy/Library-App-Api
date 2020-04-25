@@ -34,6 +34,11 @@ public class TestHelpers {
                 .lastName("test")
                 .password("testpass")
                 .username("testAdmin")
+                .address1("123 Road")
+                .address2("Flat 1")
+                .city("City 1")
+                .contactNumber("123456789")
+                .gender("M")
                 .build();
 
         return authenticationService.registerAdminUser(userRegisterRequest);
@@ -46,7 +51,7 @@ public class TestHelpers {
                 .build();
 
         HttpEntity<UserLoginRequest> loginRequest = new HttpEntity<>(userLoginRequest);
-        ResponseEntity loginResponse = restTemplate.postForEntity("/api/auth/login", loginRequest, String.class);
+        ResponseEntity<String> loginResponse = restTemplate.postForEntity("/api/auth/login", loginRequest, String.class);
 
         JsonNode node = new ObjectMapper().readValue(loginResponse.getBody().toString(), JsonNode.class);
         return bearerToken = node.get("token").asText();

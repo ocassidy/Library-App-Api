@@ -20,14 +20,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name = "users")
 public class UserEntity implements Serializable {
-    public UserEntity(String firstName, String lastName, String username, String email, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -64,11 +56,25 @@ public class UserEntity implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "userEntity", cascade = CascadeType.ALL)
     private List<UserLoanEntity> userLoans;
 
+    @NotNull
+    @Column(name = "address1")
     private String address1;
+
     private String address2;
+
+    @NotNull
+    @Column(name = "city")
     private String city;
+
+    @NotNull
+    @Column(name = "contact_number")
     private String contactNumber;
+
     @CreationTimestamp
+    @Column(name = "registration_date")
     private Calendar registrationDate;
+
+    @NotNull
+    @Column(name = "gender")
     private String gender;
 }

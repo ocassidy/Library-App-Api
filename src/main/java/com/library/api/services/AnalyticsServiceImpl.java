@@ -1,7 +1,8 @@
 package com.library.api.services;
 
 import com.library.api.models.analytics.books.*;
-import com.library.api.models.analytics.users.AllUserAnalyticsResponse;
+import com.library.api.models.analytics.users.NumOfUserLoansResponse;
+import com.library.api.models.analytics.users.NumOfUserReturnsResponse;
 import com.library.api.repositories.BookLoanRepository;
 import com.library.api.repositories.BookRepository;
 import com.library.api.repositories.UserLoanRepository;
@@ -84,10 +85,16 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         return userLoanRepository.getReturnsInDateRange(formattedStartDate, formattedEndDate);
     }
 
-    public AllUserAnalyticsResponse getAllUserAnalytics(int loanNumber) {
-        return AllUserAnalyticsResponse.builder()
+    public NumOfUserLoansResponse getNumOfUserLoansAnalytics(int loanNumber) {
+        return NumOfUserLoansResponse.builder()
                 .getNumOfActiveUserLoans(userRepository.getNumberOfActiveUserLoans(loanNumber))
                 .getNumOfUserLoans(userRepository.getNumberOfUserLoans(loanNumber))
+                .build();
+    }
+
+    public NumOfUserReturnsResponse getNumOfUserReturnsAnalytics(int loanNumber) {
+        return NumOfUserReturnsResponse.builder()
+                .getNumOfUserReturns(userRepository.getNumberOfUserReturns(loanNumber))
                 .build();
     }
 }

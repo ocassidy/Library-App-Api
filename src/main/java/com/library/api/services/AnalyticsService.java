@@ -1,9 +1,10 @@
 package com.library.api.services;
 
+
 import com.library.api.models.analytics.books.AllBookAnalyticsResponse;
-import com.library.api.models.analytics.users.AllUserAnalyticsResponse;
+import com.library.api.models.analytics.users.NumOfUserLoansResponse;
 
 public interface AnalyticsService {
     AllBookAnalyticsResponse getAllBookAnalytics();
-    AllUserAnalyticsResponse getAllUserAnalytics(int loanNumber);
+    NumOfUserLoansResponse getNumOfUserLoansAnalytics(int loanNumber);
 }

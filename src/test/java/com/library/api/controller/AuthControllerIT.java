@@ -60,10 +60,15 @@ public class AuthControllerIT {
                 .lastName("Test")
                 .password("testpass")
                 .username("registerTest")
+                .address1("123 Road")
+                .address2("Flat 1")
+                .city("City 1")
+                .contactNumber("123456789")
+                .gender("M")
                 .build();
 
         HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest);
-        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
+        ResponseEntity<String> registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
         assertEquals(CREATED, registerResponse.getStatusCode());
     }
 
@@ -75,10 +80,15 @@ public class AuthControllerIT {
                 .lastName("Test")
                 .password("testpass")
                 .username("registerTest")
+                .address1("123 Road")
+                .address2("Flat 1")
+                .city("City 1")
+                .contactNumber("123456789")
+                .gender("M")
                 .build();
 
         HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest);
-        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
+        ResponseEntity<String> registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
         assertEquals(CREATED, registerResponse.getStatusCode());
 
         UserRegisterRequest user2ndRegisterRequest = UserRegisterRequest.builder().
@@ -87,10 +97,15 @@ public class AuthControllerIT {
                 .lastName("Test")
                 .password("testpass")
                 .username("registerTest")
+                .address1("123 Road")
+                .address2("Flat 1")
+                .city("City 1")
+                .contactNumber("123456789")
+                .gender("M")
                 .build();
 
         HttpEntity<UserRegisterRequest> register2ndRequest = new HttpEntity<>(user2ndRegisterRequest);
-        ResponseEntity register2ndResponse = restTemplate.postForEntity("/api/auth/register", register2ndRequest, String.class);
+        ResponseEntity<String> register2ndResponse = restTemplate.postForEntity("/api/auth/register", register2ndRequest, String.class);
         assertEquals(BAD_REQUEST, register2ndResponse.getStatusCode());
         assertEquals("{\"success\":false,\"message\":\"Username is already taken!\",\"object\":null}", register2ndResponse.getBody());
     }
@@ -103,10 +118,15 @@ public class AuthControllerIT {
                 .lastName("Test")
                 .password("testpass")
                 .username("test")
+                .address1("123 Road")
+                .address2("Flat 1")
+                .city("City 1")
+                .contactNumber("123456789")
+                .gender("M")
                 .build();
 
         HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest);
-        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
+        ResponseEntity<String> registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
         assertEquals(CREATED, registerResponse.getStatusCode());
 
         UserRegisterRequest user2ndRegisterRequest = UserRegisterRequest.builder().
@@ -115,10 +135,15 @@ public class AuthControllerIT {
                 .lastName("test")
                 .password("testpass")
                 .username("ocassidy")
+                .address1("123 Road")
+                .address2("Flat 1")
+                .city("City 1")
+                .contactNumber("123456789")
+                .gender("M")
                 .build();
 
         HttpEntity<UserRegisterRequest> register2ndRequest = new HttpEntity<>(user2ndRegisterRequest);
-        ResponseEntity register2ndResponse = restTemplate.postForEntity("/api/auth/register", register2ndRequest, String.class);
+        ResponseEntity<String> register2ndResponse = restTemplate.postForEntity("/api/auth/register", register2ndRequest, String.class);
         assertEquals(BAD_REQUEST, register2ndResponse.getStatusCode());
         assertEquals("{\"success\":false,\"message\":\"Email Address already in use!\",\"object\":null}", register2ndResponse.getBody());
     }
@@ -131,10 +156,15 @@ public class AuthControllerIT {
                 .lastName("Test")
                 .password("testpass")
                 .username("NewUser")
+                .address1("123 Road")
+                .address2("Flat 1")
+                .city("City 1")
+                .contactNumber("123456789")
+                .gender("M")
                 .build();
 
         HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest);
-        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
+        ResponseEntity<String> registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
         assertEquals(CREATED, registerResponse.getStatusCode());
 
         UserLoginRequest userLoginRequest = UserLoginRequest.builder()
@@ -143,7 +173,7 @@ public class AuthControllerIT {
                 .build();
 
         HttpEntity<UserLoginRequest> loginRequest = new HttpEntity<>(userLoginRequest);
-        ResponseEntity loginResponse = restTemplate.postForEntity("/api/auth/login", loginRequest, String.class);
+        ResponseEntity<String> loginResponse = restTemplate.postForEntity("/api/auth/login", loginRequest, String.class);
         assertEquals(OK, loginResponse.getStatusCode());
 
         String bearerToken = testHelpers.loginUserRetrieveToken("NewUser", "testpass");
@@ -165,10 +195,15 @@ public class AuthControllerIT {
                 .lastName("test")
                 .password("testpass")
                 .username("test")
+                .address1("123 Road")
+                .address2("Flat 1")
+                .city("City 1")
+                .contactNumber("123456789")
+                .gender("M")
                 .build();
 
         HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest, presetAdminAuthHeader);
-        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register/admin", registerRequest, String.class);
+        ResponseEntity<String> registerResponse = restTemplate.postForEntity("/api/auth/register/admin", registerRequest, String.class);
         assertEquals(CREATED, registerResponse.getStatusCode());
     }
 
@@ -180,10 +215,15 @@ public class AuthControllerIT {
                 .lastName("Test")
                 .password("testpass")
                 .username("NewUser")
+                .address1("123 Road")
+                .address2("Flat 1")
+                .city("City 1")
+                .contactNumber("123456789")
+                .gender("M")
                 .build();
 
         HttpEntity<UserRegisterRequest> registerRequest = new HttpEntity<>(userRegisterRequest);
-        ResponseEntity registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
+        ResponseEntity<String> registerResponse = restTemplate.postForEntity("/api/auth/register", registerRequest, String.class);
         assertEquals(CREATED, registerResponse.getStatusCode());
 
         String bearerToken = testHelpers.loginUserRetrieveToken("NewUser", "testpass");
@@ -198,10 +238,15 @@ public class AuthControllerIT {
                 .lastName("test")
                 .password("testpass")
                 .username("test")
+                .address1("123 Road")
+                .address2("Flat 1")
+                .city("City 1")
+                .contactNumber("123456789")
+                .gender("M")
                 .build();
 
         HttpEntity<UserRegisterRequest> adminRegisterRequest = new HttpEntity<>(adminUserRegisterRequest, headers);
-        ResponseEntity adminRegisterResponse = restTemplate.postForEntity("/api/auth/register/admin", adminRegisterRequest, String.class);
+        ResponseEntity<String> adminRegisterResponse = restTemplate.postForEntity("/api/auth/register/admin", adminRegisterRequest, String.class);
         assertEquals(FORBIDDEN, adminRegisterResponse.getStatusCode());
     }
 }
