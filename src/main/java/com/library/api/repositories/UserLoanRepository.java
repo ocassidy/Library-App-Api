@@ -18,6 +18,7 @@ public interface UserLoanRepository extends CrudRepository<UserLoanEntity, Long>
     Optional<UserLoanEntity> findById(Long id);
 
     Long countAllByFineIsTrue();
+    Long countAllByBeenExtendedIsTrue();
 
     @Query(value = "SELECT cast(ul.date_withdrawn AS date) AS dateWithdrawn,\n" +
             "COUNT (ul.date_withdrawn) AS numberOfLoans\n" +

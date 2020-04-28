@@ -23,4 +23,6 @@ public interface BookService {
     ApiResponse loanBook(BookLoanRequest bookLoanRequest);
 
     ApiResponse returnBook(BookReturnRequest bookReturnRequest);
+
+    ApiResponse extendLoan(BookExtendLoanRequest bookExtendLoanRequest);
 }

@@ -38,7 +38,8 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
             "ul.date_due_back AS dateDueBack,\n" +
             "ul.fine AS fine,\n" +
             "ul.overdue_by AS overdueBy,\n" +
-            "ul.active AS active\n" +
+            "ul.active AS active,\n" +
+            "ul.been_extended AS beenExtended\n" +
             "FROM users as u\n" +
             "LEFT OUTER JOIN user_loans as ul\n" +
             "ON u.user_id = ul.user_id\n" +

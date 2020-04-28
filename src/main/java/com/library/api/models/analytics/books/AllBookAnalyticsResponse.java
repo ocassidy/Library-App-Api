@@ -17,6 +17,7 @@ public class AllBookAnalyticsResponse {
     Long totalNumOfUsers;
     Long totalNumOfFines;
     Long totalNumOfBooksMissing;
+    Long totalNumberOfExtensions;
     List<GetAllLoanDetails> allLoanDetailsList;
     List<GetAllLoanDetails> allActiveLoansDetailsList;
     List<GetNumOfLoansByAuthor> numOfActiveLoansByAuthor;

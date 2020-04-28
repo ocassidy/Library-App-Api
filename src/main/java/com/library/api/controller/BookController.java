@@ -86,13 +86,20 @@ public class BookController {
         return new ResponseEntity<>(apiResponse, OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    @PostMapping("/book/loan-extend")
+    public ResponseEntity<ApiResponse> extendBookLoan(@RequestBody @Valid BookExtendLoanRequest bookExtendLoanRequest) {
+        ApiResponse apiResponse = bookService.extendLoan(bookExtendLoanRequest);
+
+        if (!apiResponse.getSuccess()) {
+            return new ResponseEntity<>(apiResponse, UNPROCESSABLE_ENTITY);
+        }
+
+        return new ResponseEntity<>(apiResponse, OK);
+    }
+
     @GetMapping("/books")
     public ResponseEntity<List<BookEntity>> getAllBooks() {
         return new ResponseEntity<>(bookService.getAllBooks(), OK);
-    }
-
-    @GetMapping("/books/{name}")
-    public ResponseEntity getAllBooksByBookName(@PathVariable String name) {
-        return new ResponseEntity<>(bookService.getAllBooksByName(name), OK);
     }
 }

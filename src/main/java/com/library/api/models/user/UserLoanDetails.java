@@ -11,5 +11,6 @@ public interface UserLoanDetails {
     String getDateDueBack();
     String getFine();
     String getOverdueBy();
-    String getActive();
+    Boolean getBeenExtended();
+    Boolean getActive();
 }

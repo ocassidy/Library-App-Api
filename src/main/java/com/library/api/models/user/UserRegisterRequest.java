@@ -18,11 +18,11 @@ import java.util.Calendar;
 @Builder
 public class UserRegisterRequest {
     @NotBlank
-    @Size(min = 4, max = 100)
+    @Size(min = 2, max = 100)
     private String firstName;
 
     @NotBlank
-    @Size(min = 4, max = 100)
+    @Size(min = 2, max = 100)
     private String lastName;
 
     @NotBlank

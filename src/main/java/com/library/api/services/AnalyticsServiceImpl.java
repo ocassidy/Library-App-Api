@@ -52,6 +52,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                 .totalNumOfLoans(bookLoanRepository.count())
                 .totalNumOfUsers(userRepository.count())
                 .totalNumOfFines(userLoanRepository.countAllByFineIsTrue())
+                .totalNumberOfExtensions(userLoanRepository.countAllByBeenExtendedIsTrue())
                 .totalNumOfBooksMissing(bookRepository.countAllByMissingIsTrue())
                 .allLoanDetailsList(bookRepository.getAllBookLoanDetails())
                 .allActiveLoansDetailsList(bookRepository.getAllActiveBookLoans())

@@ -58,4 +58,8 @@ public class UserLoanEntity implements Serializable {
     @NotNull
     @Column(name = "active")
     private boolean active;
+
+    @NotNull
+    @Column(name = "been_extended")
+    private boolean beenExtended;
 }

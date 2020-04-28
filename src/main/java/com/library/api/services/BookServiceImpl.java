@@ -16,11 +16,11 @@ import java.util.*;
 
 @Service
 public class BookServiceImpl implements BookService {
-    private BookRepository bookRepository;
-    private UserLoanRepository userLoanRepository;
-    private BookLoanRepository bookLoanRepository;
-    private UserService userService;
-    private BookPageMapper bookPageMapper;
+    private final BookRepository bookRepository;
+    private final UserLoanRepository userLoanRepository;
+    private final BookLoanRepository bookLoanRepository;
+    private final UserService userService;
+    private final BookPageMapper bookPageMapper;
 
     public BookServiceImpl(BookRepository bookRepository,
                            UserLoanRepository userLoanRepository,
@@ -129,11 +129,12 @@ public class BookServiceImpl implements BookService {
                 .userEntity(userEntity)
                 .active(true)
                 .dateDueBack(calendar)
+                .beenExtended(false)
+                .fine(false)
+                .fineAmount(0)
                 .build();
 
         UserLoanEntity savedUserLoan = userLoanRepository.save(userLoanEntity);
-        userLoanEntity.setFine(false);
-        userLoanEntity.setFineAmount(0);
 
         BookLoanId bookLoanId = new BookLoanId();
 
@@ -167,12 +168,13 @@ public class BookServiceImpl implements BookService {
 
         Optional<UserLoanEntity> optionalUserLoanEntity = userLoanRepository.findById(bookReturnRequest.getLoanId());
 
-        if (userLoanRepository.findById(bookReturnRequest.getLoanId()).isPresent()) {
+        if (userLoanRepository.findById(bookReturnRequest.getLoanId()).isPresent() && optionalUserLoanEntity.isPresent()) {
             UserLoanEntity userLoanEntity = optionalUserLoanEntity.get();
             userLoanEntity.setId(bookReturnRequest.getLoanId());
             userLoanEntity.setActive(false);
             userLoanEntity.setUserEntity(userEntity);
             userLoanEntity.setDateReturned(calendar);
+            userLoanEntity.setBeenExtended(false);
 
             UserLoanEntity savedUserLoan = userLoanRepository.save(userLoanEntity);
             BookLoanId bookLoanId = new BookLoanId();
@@ -186,5 +188,22 @@ public class BookServiceImpl implements BookService {
             return new ApiResponse(true, "Book Successfully Returned.", bookToReturn);
         }
         return new ApiResponse(false, "Book Return Failed.", bookToReturn);
+    }
+
+    public ApiResponse extendLoan(BookExtendLoanRequest bookExtendLoanRequest) {
+        Optional<UserLoanEntity> userLoanEntity = userLoanRepository.findById(bookExtendLoanRequest.getLoanId());
+
+        if (userLoanEntity.isPresent()) {
+            Calendar updateDueBackDate = userLoanEntity.get().getDateDueBack();
+            updateDueBackDate.add(Calendar.MONTH, bookExtendLoanRequest.getLengthOfExtension());
+            userLoanEntity.get().setDateDueBack(updateDueBackDate);
+            userLoanEntity.get().setBeenExtended(true);
+            UserLoanEntity savedUserLoanEntity = userLoanRepository.save(userLoanEntity.get());
+            final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            String currentDate = dateFormat.format(savedUserLoanEntity.getDateDueBack().getTime());
+            return new ApiResponse(true, "Loan Extended Successfully with new date: " + currentDate);
+        }
+
+        return new ApiResponse(false, "Loan not found with loanID " + bookExtendLoanRequest.getLoanId());
     }
 }
